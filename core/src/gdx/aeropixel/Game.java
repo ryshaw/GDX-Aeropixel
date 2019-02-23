@@ -2,42 +2,38 @@ package gdx.aeropixel;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
 
 public class Game extends ApplicationAdapter {
 	private SpriteBatch batch;
-	private Texture plane, cloud1, cloud2;
-	private OrthographicCamera camera;
-	private Rectangle player;
-	private float rotation = 0;
-	private Sprite sprite;
+	private Texture cloud1, cloud2;
+	static OrthographicCamera camera;
+	private static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
+	private Array<Vector2> clouds = new Array<Vector2>(); // create a sea of clouds
+
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
-		plane = new Texture("plane.png");
 		cloud1 = new Texture("cloud1.png");
 		cloud2 = new Texture("cloud2.png");
 
 		camera = new OrthographicCamera();
-  		camera.setToOrtho(false, 800, 640);
+  		camera.setToOrtho(false, WINDOW_SIZE.x, WINDOW_SIZE.y);
 
-  		player = new Rectangle();
-  		player.x = 800f/2 - 64f/2;
-  		player.y = 20;
-  		player.width = 64;
-  		player.height = 64;
+  		new Player();
 
-  		sprite = new Sprite(plane);
-  		sprite.setPosition(player.x, player.y);
-
+  		for (int i = 0; i < 500; i++) {
+  			Vector2 v = new Vector2(MathUtils.random(-6000, 6000), MathUtils.random(-6000, 6000));
+  			clouds.add(v);
+		}
 	}
 
 	@Override
@@ -45,42 +41,26 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0.9f, 0.9f, 0.9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		camera.update();
 		batch.setProjectionMatrix(camera.combined);
-
 		batch.begin();
-        sprite.draw(batch);
-		batch.draw(cloud1, 200, 300);
-		batch.draw(cloud2, 500, 460);
+        Player.sprite.draw(batch);
+
+        for (int i = 0; i < 250; i++) {
+        	batch.draw(cloud1, clouds.get(i).x, clouds.get(i).y);
+			batch.draw(cloud2, clouds.get(250+i).x, clouds.get(250+i).y);
+		}
 
 		batch.end();
 
-		Vector3 center = new Vector3((int) player.x+32,(int) player.y+32,0);
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-		    rotation -= 1f;
-			camera.rotateAround(center, new Vector3(0, 0, 1), -1f);
-		}
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-		    rotation += 1f;
-			camera.rotateAround(center, new Vector3(0, 0, 1), 1f);
-		}
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-			sprite.translateY(1);
-		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
-            sprite.translateY(-1);
-		}
-
-		sprite.setRotation(rotation);
-
+		Player.update();
 	 	camera.update();
 	}
 	
 	@Override
 	public void dispose() {
 		batch.dispose();
-		plane.dispose();
 		cloud1.dispose();
 		cloud2.dispose();
+		Player.dispose();
 	}
 }
