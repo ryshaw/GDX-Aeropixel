@@ -8,12 +8,12 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 class Player {
-    private static Texture texture;
     private static Rectangle rectangle;
     static Sprite sprite;
-    private static Vector2 position = new Vector2(400, 52); // center is (400,52)
+    private static Vector2 position = new Vector2(400, 52);
     private static Vector3 cameraCenter = new Vector3(400, 52, 0);
     private static float size = 64;
     private static float rotation = 0;
@@ -23,12 +23,14 @@ class Player {
     private static float rotTime = 0;
     private static float speedTime = 0;
 
+    private static Array<Bullet> bullets = new Array<Bullet>();
+
 
     Player() {
-        texture = new Texture("plane.png");
         rectangle = new Rectangle(position.x - size/2, position.y - size/2, size, size);
-        sprite = new Sprite(texture);
+        sprite = new Sprite(new Texture("plane.png"));
         sprite.setCenter(position.x, position.y);
+        bullets = new Array<Bullet>();
     }
 
 
@@ -51,8 +53,16 @@ class Player {
             speedTime -= 0.6*Gdx.graphics.getDeltaTime();
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            shoot();
+        }
+
         rotate();
         move();
+
+        for (Bullet b: bullets) {
+            b.update();
+        }
     }
 
     private static void rotate() {
@@ -60,7 +70,7 @@ class Player {
         float rotSpeed = MathUtils.lerp(0, 2, rotTime); // min = -2, max = 2
 
         rotation += rotSpeed;
-        Game.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotSpeed);
+        GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotSpeed);
         sprite.setRotation(rotation);
     }
 
@@ -73,10 +83,15 @@ class Player {
         Vector2 delta = new Vector2(-moveSpeed * dirX, moveSpeed * dirY);
         Vector2 push = new Vector2(-16 * speedTime * dirX, 16 * speedTime * dirY);
 
-        Game.camera.translate(delta.x, delta.y);
+        GameScreen.camera.translate(delta.x, delta.y);
         cameraCenter.add(delta.x, delta.y, 0);
         position.set(cameraCenter.x + push.x, cameraCenter.y + push.y);
         sprite.setCenter(position.x, position.y);
+    }
+
+    private static void shoot() {
+        //TODO: fix bullets
+        GameScreen.addProjectile(new Bullet(position.x, position.y, rotation));
     }
 
     static float getMoveSpeed() {
@@ -84,6 +99,9 @@ class Player {
     }
 
     static void dispose() {
-        texture.dispose();
+        sprite.getTexture().dispose();
+        for (Bullet b : bullets) {
+            b.dispose();
+        }
     }
 }
