@@ -16,11 +16,11 @@ class Player {
     private static Vector2 position = new Vector2(400, 52); // center is (400,52)
     private static Vector3 cameraCenter = new Vector3(400, 52, 0);
     private static float size = 64;
-    private static int rotation = 0;
+    private static float rotation = 0;
 
-    private static float rotSpeed = 2;
-    private static float moveSpeed = 5;
+    private static float moveSpeed = 4;
 
+    private static float rotTime = 0;
     private static float speedTime = 0;
 
 
@@ -33,53 +33,55 @@ class Player {
 
 
     static void update() {
-        //TODO: Rotation speed lerping, similar to with the engine speed.
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            rotation -= rotSpeed;
-            Game.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), -rotSpeed);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            rotation += rotSpeed;
-            Game.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotSpeed);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            speedTime += 0.8*Gdx.graphics.getDeltaTime();
+            rotTime -= 2*Gdx.graphics.getDeltaTime();
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            rotTime += 2*Gdx.graphics.getDeltaTime();
         } else {
-            speedTime -= 0.8*Gdx.graphics.getDeltaTime();
+            if (MathUtils.isZero(rotTime, 0.02f)) {
+                rotTime = 0;
+            } else {
+                rotTime += -1 * Math.signum(rotTime) * 2 * Gdx.graphics.getDeltaTime();
+            }
         }
-        speedTime = MathUtils.clamp(speedTime, 0, 1);
-        moveSpeed = MathUtils.lerp(5, 10, speedTime);
 
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            speedTime += 0.6*Gdx.graphics.getDeltaTime();
+        } else {
+            speedTime -= 0.6*Gdx.graphics.getDeltaTime();
+        }
+
+        rotate();
         move();
-        sprite.setCenter(position.x, position.y);
+    }
+
+    private static void rotate() {
+        rotTime = MathUtils.clamp(rotTime, -1, 1);
+        float rotSpeed = MathUtils.lerp(0, 2, rotTime); // min = -2, max = 2
+
+        rotation += rotSpeed;
+        Game.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotSpeed);
         sprite.setRotation(rotation);
     }
 
     private static void move() {
-        //TODO: Camera offset for plane when going fast.
-        float xDelta = -moveSpeed * (float) Math.sin(Math.toRadians(rotation));
-        float yDelta = moveSpeed * (float) Math.cos(Math.toRadians(rotation));
-        float xPush = speedTime * (float) Math.sin(Math.toRadians(rotation));
-        float yPush = speedTime * (float) Math.cos(Math.toRadians(rotation));
-        Vector2 offset = new Vector2(xPush, yPush);
+        speedTime = MathUtils.clamp(speedTime, 0, 1);
+        moveSpeed = MathUtils.lerp(4, 10, speedTime);
 
-        position.add(xDelta, yDelta);
-        Game.camera.translate(xDelta, yDelta);
-        cameraCenter.add(xDelta, yDelta, 0);
+        float dirX = (float) Math.sin(Math.toRadians(rotation));
+        float dirY = (float) Math.cos(Math.toRadians(rotation));
+        Vector2 delta = new Vector2(-moveSpeed * dirX, moveSpeed * dirY);
+        Vector2 push = new Vector2(-16 * speedTime * dirX, 16 * speedTime * dirY);
+
+        Game.camera.translate(delta.x, delta.y);
+        cameraCenter.add(delta.x, delta.y, 0);
+        position.set(cameraCenter.x + push.x, cameraCenter.y + push.y);
+        sprite.setCenter(position.x, position.y);
     }
 
     static float getMoveSpeed() {
         return moveSpeed;
     }
-
-    static float getRotation() {
-        return rotation;
-    }
-
-    static Vector2 getCenter() {
-        return position;
-    }
-
 
     static void dispose() {
         texture.dispose();

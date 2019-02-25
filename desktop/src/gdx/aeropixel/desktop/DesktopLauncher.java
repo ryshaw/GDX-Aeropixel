@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.title = "Aeropixel";
   		config.width = 800;
   		config.height = 640;
+  		config.vSyncEnabled = true;
   		new LwjglApplication(new Game(), config);
 	}
 }

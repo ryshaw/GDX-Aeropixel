@@ -67,9 +67,7 @@ public class Game extends ApplicationAdapter {
 		Player.sprite.draw(batch);
 
         String s1 = "Speed: " + Math.round(Player.getMoveSpeed()*10)/10f;
-        String s2 = "Rotation: " + Player.getRotation();
         debugFont.draw(batch, s1, Player.sprite.getX() + 80, Player.sprite.getY() + 80);
-		debugFont.draw(batch, s2, Player.sprite.getX() + 80, Player.sprite.getY() + 60);
 		batch.end();
 
 		Player.update();
