@@ -59,10 +59,6 @@ class Player {
 
         rotate();
         move();
-
-        for (Bullet b: bullets) {
-            b.update();
-        }
     }
 
     private static void rotate() {

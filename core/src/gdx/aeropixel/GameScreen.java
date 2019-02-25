@@ -49,24 +49,16 @@ public class GameScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-
         for (int i = 0; i < 1000/2; i++) {
             game.batch.draw(cloud1, clouds.get(i).x, clouds.get(i).y);
             game.batch.draw(cloud2, clouds.get(1000/2+i).x, clouds.get(1000/2+i).y);
         }
         Player.sprite.draw(game.batch);
+        for (Bullet b : bullets) b.sprite.draw(game.batch);
 
-        for (Bullet b : bullets) {
-            b.sprite.draw(game.batch);
-        }
-
-        //String s1 = "Speed: " + Math.round(Player.getMoveSpeed()*10)/10f;
-        //game.debugFont.draw(game.batch, s1, Player.sprite.getX() + 80, Player.sprite.getY() + 80);
         game.batch.end();
 
-        for (Bullet b : bullets) {
-            b.update();
-        }
+        for (Bullet b : bullets) b.update();
         Player.update();
         camera.update();
 	}
@@ -81,6 +73,7 @@ public class GameScreen implements Screen {
         cloud1.dispose();
         cloud2.dispose();
         Player.dispose();
+        for (Bullet b : bullets) b.dispose();
 	}
 
 
