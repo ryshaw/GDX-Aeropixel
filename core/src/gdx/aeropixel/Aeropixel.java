@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 public class Aeropixel extends Game {
 
 	SpriteBatch batch;
-    BitmapFont titleFont, debugFont;
+    BitmapFont titleFont, debugFont, menuFont;
     Screen currentScreen;
 
 	@Override
@@ -25,9 +25,13 @@ public class Aeropixel extends Game {
         parameter.color = Color.BLACK;
         debugFont = generator.generateFont(parameter);
 
-        parameter.size = 42;
+        parameter.size = 80;
         parameter.color = Color.BLACK;
         titleFont = generator.generateFont(parameter);
+
+        parameter.size = 60;
+        parameter.color = Color.BLACK;
+		menuFont = generator.generateFont(parameter);
 
         generator.dispose();
         this.currentScreen = new MainScreen(this);

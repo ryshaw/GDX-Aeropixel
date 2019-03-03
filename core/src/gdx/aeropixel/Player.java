@@ -16,14 +16,15 @@ class Player {
     private static Vector2 position = new Vector2(400, 52);
     private static Vector3 cameraCenter = new Vector3(400, 52, 0);
     private static float size = 64;
-    private static float rotation = 0;
+    static float rotation = 0;
 
-    private static float moveSpeed = 4;
+    private static float moveSpeed = 400;
 
     private static float rotTime = 0;
     private static float speedTime = 0;
+    private static float timeBetweenShots = 0;
 
-    private static Array<Bullet> bullets = new Array<Bullet>();
+    private static Array<Bullet> bullets;
 
 
     Player() {
@@ -35,10 +36,11 @@ class Player {
 
 
     static void update() {
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            rotTime -= 2*Gdx.graphics.getDeltaTime();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            rotTime += 2*Gdx.graphics.getDeltaTime();
+        //TODO: work on input processing. currently only can utilize two buttons at a time
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
+            rotTime -= 2 * Gdx.graphics.getDeltaTime();
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
+            rotTime += 2 * Gdx.graphics.getDeltaTime();
         } else {
             if (MathUtils.isZero(rotTime, 0.02f)) {
                 rotTime = 0;
@@ -47,37 +49,39 @@ class Player {
             }
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)) {
             speedTime += 0.6*Gdx.graphics.getDeltaTime();
         } else {
             speedTime -= 0.6*Gdx.graphics.getDeltaTime();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && timeBetweenShots > 0.2) {
             shoot();
+            timeBetweenShots = 0;
         }
 
         rotate();
         move();
+
+        timeBetweenShots += Gdx.graphics.getDeltaTime();
     }
 
     private static void rotate() {
         rotTime = MathUtils.clamp(rotTime, -1, 1);
-        float rotSpeed = MathUtils.lerp(0, 2, rotTime); // min = -2, max = 2
+        float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
 
-        rotation += rotSpeed;
-        GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotSpeed);
+        float rotationDelta = rotSpeed * Gdx.graphics.getDeltaTime();
+        rotation += rotationDelta;
+        GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotationDelta);
         sprite.setRotation(rotation);
     }
 
     private static void move() {
         speedTime = MathUtils.clamp(speedTime, 0, 1);
-        moveSpeed = MathUtils.lerp(4, 10, speedTime);
+        moveSpeed = MathUtils.lerp(400, 600, speedTime);
 
-        float dirX = (float) Math.sin(Math.toRadians(rotation));
-        float dirY = (float) Math.cos(Math.toRadians(rotation));
-        Vector2 delta = new Vector2(-moveSpeed * dirX, moveSpeed * dirY);
-        Vector2 push = new Vector2(-16 * speedTime * dirX, 16 * speedTime * dirY);
+        Vector2 delta = GameScreen.getVelocity(rotation, moveSpeed, true);
+        Vector2 push = GameScreen.getVelocity(rotation, 10 * speedTime, false);
 
         GameScreen.camera.translate(delta.x, delta.y);
         cameraCenter.add(delta.x, delta.y, 0);
@@ -86,12 +90,8 @@ class Player {
     }
 
     private static void shoot() {
-        //TODO: fix bullets
-        GameScreen.addProjectile(new Bullet(position.x, position.y, rotation));
-    }
-
-    static float getMoveSpeed() {
-        return moveSpeed;
+        Vector2 front = GameScreen.getVelocity(rotation, 40, false);
+        GameScreen.addProjectile(new Bullet(position.x + front.x, position.y + front.y, rotation));
     }
 
     static void dispose() {

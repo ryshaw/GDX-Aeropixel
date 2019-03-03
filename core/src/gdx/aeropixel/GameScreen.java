@@ -9,13 +9,16 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class GameScreen implements Screen {
   	private final Aeropixel game;
 	private Texture cloud1, cloud2;
     private static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
    	private static final Vector2 MAP_SIZE = new Vector2(-8000, 8000);
-   	private Array<Vector2> clouds = new Array<Vector2>(); // create a sea of clouds
-    private static Array<Bullet> bullets;
+   	private Array<Vector2> clouds = new Array<Vector2>();
+    private static ArrayList<Bullet> bullets;
 
     static OrthographicCamera camera;
 
@@ -29,7 +32,7 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, WINDOW_SIZE.x, WINDOW_SIZE.y);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2000; i++) {
             float randomX = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);
             float randomY = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);
 
@@ -37,44 +40,68 @@ public class GameScreen implements Screen {
             clouds.add(v);
         }
 
-        bullets = new Array<Bullet>();
+        bullets = new ArrayList<Bullet>();
         new Player();
 	}
 
 
 	@Override
 	public void render(float delta) {
-        Gdx.gl.glClearColor(0.95f, 0.95f, 1f, 1);
+        Gdx.gl.glClearColor(0.95f, 0.95f, 0.95f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        for (int i = 0; i < 1000/2; i++) {
+        for (int i = 0; i < 2000/2; i++) {
             game.batch.draw(cloud1, clouds.get(i).x, clouds.get(i).y);
-            game.batch.draw(cloud2, clouds.get(1000/2+i).x, clouds.get(1000/2+i).y);
+            game.batch.draw(cloud2, clouds.get(2000/2+i).x, clouds.get(2000/2+i).y);
         }
         Player.sprite.draw(game.batch);
         for (Bullet b : bullets) b.sprite.draw(game.batch);
 
         game.batch.end();
 
-        for (Bullet b : bullets) b.update();
+        for (Iterator<Bullet> iterator = bullets.iterator(); iterator.hasNext();) {
+            Bullet b = iterator.next();
+            Vector2 p = b.getPosition();
+            if (Math.abs(p.x) > MAP_SIZE.y || Math.abs(p.y) > MAP_SIZE.y) {
+                iterator.remove();
+            } else {
+                b.update();
+            }
+        }
+
         Player.update();
         camera.update();
 	}
+
 
 	static void addProjectile(Bullet b) {
 	     bullets.add(b);
     }
 
 
-	@Override
-	public void dispose() {
-        cloud1.dispose();
-        cloud2.dispose();
-        Player.dispose();
-        for (Bullet b : bullets) b.dispose();
-	}
+    static Vector2 getVelocity(float direction, float speed, boolean scale) {
+        float dirX = (float) Math.sin(Math.toRadians(direction));
+        float dirY = (float) Math.cos(Math.toRadians(direction));
+        Vector2 delta = new Vector2(-speed * dirX, speed * dirY);
+        if (scale) {
+            return delta.scl(Gdx.graphics.getDeltaTime());
+        } else {
+            return delta;
+        }
+    }
+
+
+    @Override
+   	public void dispose() {
+	     cloud1.dispose();
+	     cloud2.dispose();
+	     Player.dispose();
+	     for (Bullet b : bullets) b.dispose();
+   	}
+
+
 
 
     @Override
