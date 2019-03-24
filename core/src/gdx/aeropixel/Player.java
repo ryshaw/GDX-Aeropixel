@@ -1,7 +1,6 @@
 package gdx.aeropixel;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -9,6 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
 
 class Player {
     private static Rectangle rectangle;
@@ -25,21 +26,23 @@ class Player {
     private static float timeBetweenShots = 0;
 
     private static Array<Bullet> bullets;
+    private static ArrayList keysDown;
 
 
     Player() {
         rectangle = new Rectangle(position.x - size/2, position.y - size/2, size, size);
         sprite = new Sprite(new Texture("plane.png"));
         sprite.setCenter(position.x, position.y);
-        bullets = new Array<Bullet>();
+        bullets = new Array<>();
     }
 
 
     static void update() {
-        //TODO: work on input processing. currently only can utilize two buttons at a time
-        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
+    	keysDown = GameInput.getKeyInput();
+
+        if (keysDown.contains("D")) {
             rotTime -= 2 * Gdx.graphics.getDeltaTime();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
+        } else if (keysDown.contains("A")) {
             rotTime += 2 * Gdx.graphics.getDeltaTime();
         } else {
             if (MathUtils.isZero(rotTime, 0.02f)) {
@@ -49,13 +52,13 @@ class Player {
             }
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)) {
+        if (keysDown.contains("W")) {
             speedTime += 0.6*Gdx.graphics.getDeltaTime();
         } else {
             speedTime -= 0.6*Gdx.graphics.getDeltaTime();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && timeBetweenShots > 0.2) {
+        if (keysDown.contains("Space") && timeBetweenShots > 0.2) {
             shoot();
             timeBetweenShots = 0;
         }
