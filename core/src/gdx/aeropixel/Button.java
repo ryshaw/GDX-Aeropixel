@@ -10,28 +10,36 @@ public class Button {
 	private String text;
 	private SpriteBatch batch;
 	private boolean touched, clicked;
+	private BitmapFont font;
+	Command cmd;
 
-	Button(float x, float y, float w, float h, String t, SpriteBatch b) {
+	Button(float x, float y, float w, float h, String t, SpriteBatch b, BitmapFont f, Command c) {
 		this.rect = new Rectangle(x, y, w, h);
 		this.text = t;
 		this.batch = b;
+		this.font = f;
+		this.cmd = c;
 	}
 
-	void update(BitmapFont f) {
+	void update() {
+		this.touched = false;
+		this.clicked = false;
+
 		Vector2 p = MenuInput.getMousePos();
 		boolean c = MenuInput.getMouseClicked();
 		if (this.rect.contains(p)) {
 			this.touched = true;
+			System.out.println("mouseover");
 		}
 		if (touched && c) {
 			this.clicked = true;
 		}
 
-		f.draw(batch, text, rect.getX(), rect.getY());
+		this.font.draw(batch, text, rect.getX(), rect.getY());
 	}
 
-	void setPosition(float x, float y) {
-		this.rect.setPosition(x, y);
+	void offset(float x, float y) {
+		this.rect.setPosition(rect.getX() + x, rect.getY() + y);
 	}
 
 	Vector2 getPosition() {

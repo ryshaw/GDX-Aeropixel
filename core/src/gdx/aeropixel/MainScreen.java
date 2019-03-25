@@ -9,23 +9,26 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
 
 public class MainScreen implements Screen {
   	private final Aeropixel game;
 	private Texture cloud1, cloud2;
 	private Sprite plane;
     private static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
-   	private Array<Vector2> clouds = new Array<Vector2>(); // create a sea of clouds
-    private float xOffset = 0;
+   	private ArrayList<Vector2> clouds = new ArrayList<>(); // create a sea of clouds
     private float yPos = -100;
-    private Button playButton, instrButton, quitButton;
+    private int xOffset = 0;
+    private ArrayList<Button> buttons;
 
     private OrthographicCamera camera;
 
 
 	 MainScreen(final Aeropixel game) {
 		this.game = game;
+		MenuInput menuInput = new MenuInput();
+		Gdx.input.setInputProcessor(menuInput);
 
         cloud1 = new Texture("cloud1.png");
         cloud2 = new Texture("cloud2.png");
@@ -44,9 +47,10 @@ public class MainScreen implements Screen {
             clouds.add(v);
         }
 
-        playButton = new Button(60, 280, 380, 60, "Play", game.batch);
-        instrButton = new Button(60, 200, 380, 60, "Instructions", game.batch);
-        quitButton = new Button(60, 120, 380, 60, "Quit", game.batch);
+        buttons = new ArrayList<>();
+        buttons.add(new Button(60, 280, 380, 60, "Play", game.batch, game.menuFont, Command.PLAY));
+        buttons.add(new Button(60, 200, 380, 60, "Instructions", game.batch, game.menuFont, Command.INSTR));
+        buttons.add(new Button(60, 120, 380, 60, "Quit", game.batch, game.menuFont, Command.QUIT));
 	 }
 
 
@@ -54,19 +58,16 @@ public class MainScreen implements Screen {
 	public void render(float delta) {
         camera.translate(1, 0);
         xOffset += 1;
-        if (xOffset == 7000) {
-            xOffset = 0;
-            camera.translate(-7000, 0);
-        }
+
         Gdx.gl.glClearColor(0.96f, 0.96f, 0.96f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        for (int i = 1; i < clouds.size / 2; i++) {
+        for (int i = 1; i < clouds.size() / 2; i++) {
             game.batch.draw(cloud1, clouds.get(i).x, clouds.get(i).y);
-            game.batch.draw(cloud2, clouds.get(clouds.size - i).x, clouds.get(clouds.size - i).y);
+            game.batch.draw(cloud2, clouds.get(clouds.size() - i).x, clouds.get(clouds.size() - i).y);
         }
         plane.draw(game.batch);
 
@@ -78,7 +79,7 @@ public class MainScreen implements Screen {
         Rectangle r3 = new Rectangle(60 + xOffset, 200, 380, 60);
         Rectangle r4 = new Rectangle(60 + xOffset, 120, 380, 60);
 
-        if (r2.contains(Gdx.input.getX() + xOffset, WINDOW_SIZE.y - Gdx.input.getY())) {
+        /*if (r2.contains(Gdx.input.getX() + xOffset, WINDOW_SIZE.y - Gdx.input.getY())) {
             yPos = 300;
             if (Gdx.input.isTouched()) {
                 startGame();
@@ -92,14 +93,30 @@ public class MainScreen implements Screen {
             }
         } else {
             yPos = -100; // default
-        }
+        }*/
         game.titleFont.draw(game.batch, s1, 60 + xOffset, 580);
-        playButton.update(game.menuFont);
-        instrButton.update(game.menuFont);
-        quitButton.update(game.menuFont);
-        game.menuFont.draw(game.batch, s2, 100 + xOffset, 320);
-        game.menuFont.draw(game.batch, s3, 100 + xOffset, 240);
-        game.menuFont.draw(game.batch, s4, 100 + xOffset, 160);
+
+        for (Button b : buttons) {
+        	b.update();
+        	b.offset(1, 0);
+        	if (b.isTouched()) {
+        		yPos = b.getPosition().y;
+        		if (b.isClicked()) {
+        			switch (b.cmd) {
+				        case PLAY:
+				        	startGame();
+				        	break;
+				        case INSTR:
+				        	//TODO: instructions
+					        break;
+				        case QUIT:
+				        	quit();
+				        	break;
+			        }
+		        }
+	        }
+
+        }
 
         game.batch.end();
 
