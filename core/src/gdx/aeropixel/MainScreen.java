@@ -19,6 +19,7 @@ public class MainScreen implements Screen {
    	private Array<Vector2> clouds = new Array<Vector2>(); // create a sea of clouds
     private float xOffset = 0;
     private float yPos = -100;
+    private Button playButton, instrButton, quitButton;
 
     private OrthographicCamera camera;
 
@@ -42,6 +43,10 @@ public class MainScreen implements Screen {
             Vector2 v = new Vector2(randomX, randomY);
             clouds.add(v);
         }
+
+        playButton = new Button(60, 280, 380, 60, "Play", game.batch);
+        instrButton = new Button(60, 200, 380, 60, "Instructions", game.batch);
+        quitButton = new Button(60, 120, 380, 60, "Quit", game.batch);
 	 }
 
 
@@ -89,6 +94,9 @@ public class MainScreen implements Screen {
             yPos = -100; // default
         }
         game.titleFont.draw(game.batch, s1, 60 + xOffset, 580);
+        playButton.update(game.menuFont);
+        instrButton.update(game.menuFont);
+        quitButton.update(game.menuFont);
         game.menuFont.draw(game.batch, s2, 100 + xOffset, 320);
         game.menuFont.draw(game.batch, s3, 100 + xOffset, 240);
         game.menuFont.draw(game.batch, s4, 100 + xOffset, 160);
