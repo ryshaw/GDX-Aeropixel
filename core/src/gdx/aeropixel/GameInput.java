@@ -2,6 +2,7 @@ package gdx.aeropixel;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,9 @@ import java.util.Arrays;
 public class GameInput extends InputAdapter {
 	private static ArrayList<String> keysDown = new ArrayList<>();
 	private ArrayList<String> possibleInputs = new ArrayList<>(Arrays.asList("W", "A", "D", "Space"));
+
+	private static Vector2 mousePosition = new Vector2();
+	private static boolean mouseClicked = false;
 
 	@Override
 	public boolean keyDown(int keycode) {
@@ -32,15 +36,30 @@ public class GameInput extends InputAdapter {
 		return keysDown;
 	}
 
+
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-		// your touch down code here
-		return true; // return true to indicate the event was handled
+		mouseClicked = true;
+		return true;
+	}
+
+	@Override
+	public boolean mouseMoved(int x, int y) {
+		mousePosition.set(x, Aeropixel.WINDOW_SIZE.y - y);
+		return true;
 	}
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		// your touch up code here
-		return true; // return true to indicate the event was handled
+		mouseClicked = false;
+		return true;
+	}
+
+	static Vector2 getMousePos() {
+		return mousePosition;
+	}
+
+	static boolean getMouseClicked() {
+		return mouseClicked;
 	}
 }

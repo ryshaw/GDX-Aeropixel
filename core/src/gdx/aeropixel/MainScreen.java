@@ -16,7 +16,6 @@ public class MainScreen implements Screen {
   	private final Aeropixel game;
 	private Texture cloud1, cloud2;
 	private Sprite plane;
-    private static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
    	private ArrayList<Vector2> clouds = new ArrayList<>(); // create a sea of clouds
     private float yPos = -100;
     private int xOffset = 0;
@@ -27,8 +26,6 @@ public class MainScreen implements Screen {
 
 	 MainScreen(final Aeropixel game) {
 		this.game = game;
-		MenuInput menuInput = new MenuInput();
-		Gdx.input.setInputProcessor(menuInput);
 
         cloud1 = new Texture("cloud1.png");
         cloud2 = new Texture("cloud2.png");
@@ -37,7 +34,7 @@ public class MainScreen implements Screen {
         plane.setCenter(-100, -100);
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, WINDOW_SIZE.x, WINDOW_SIZE.y);
+        camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
 
         for (int i = 0; i < 100; i++) {
             float randomX = MathUtils.random(0, 8000);
@@ -56,8 +53,8 @@ public class MainScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-        camera.translate(1, 0);
-        xOffset += 1;
+        //camera.translate(1, 0);
+        //xOffset += 1;
 
         Gdx.gl.glClearColor(0.96f, 0.96f, 0.96f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -96,11 +93,12 @@ public class MainScreen implements Screen {
         }*/
         game.titleFont.draw(game.batch, s1, 60 + xOffset, 580);
 
+        yPos = -100;
         for (Button b : buttons) {
         	b.update();
-        	b.offset(1, 0);
+        	//b.offset(1, 0);
         	if (b.isTouched()) {
-        		yPos = b.getPosition().y;
+        		yPos = b.getPosition().y + b.getSize().x*0.8f;
         		if (b.isClicked()) {
         			switch (b.cmd) {
 				        case PLAY:
@@ -115,7 +113,6 @@ public class MainScreen implements Screen {
 			        }
 		        }
 	        }
-
         }
 
         game.batch.end();

@@ -8,12 +8,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.math.Vector2;
 
 public class Aeropixel extends Game {
 
 	SpriteBatch batch;
     BitmapFont titleFont, debugFont, menuFont;
     Screen currentScreen;
+    public static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
 
 	@Override
 	public void create() {
@@ -34,6 +36,10 @@ public class Aeropixel extends Game {
 		menuFont = generator.generateFont(parameter);
 
         generator.dispose();
+
+        GameInput input = new GameInput();
+        Gdx.input.setInputProcessor(input);
+
         this.currentScreen = new MainScreen(this);
         this.setScreen(currentScreen);
 	}

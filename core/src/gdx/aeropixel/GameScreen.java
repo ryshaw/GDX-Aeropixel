@@ -15,7 +15,6 @@ import java.util.Iterator;
 public class GameScreen implements Screen {
   	private final Aeropixel game;
 	private Texture cloud1, cloud2;
-    private static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
    	private static final Vector2 MAP_SIZE = new Vector2(-8000, 8000);
    	private Array<Vector2> clouds = new Array<>();
     private static ArrayList<Bullet> bullets;
@@ -25,14 +24,12 @@ public class GameScreen implements Screen {
 
 	GameScreen(final Aeropixel game) {
 		this.game = game;
-		GameInput gameInput = new GameInput();
-		Gdx.input.setInputProcessor(gameInput);
 
         cloud1 = new Texture("cloud1.png");
         cloud2 = new Texture("cloud2.png");
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, WINDOW_SIZE.x, WINDOW_SIZE.y);
+        camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
 
         for (int i = 0; i < 2000; i++) {
             float randomX = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);

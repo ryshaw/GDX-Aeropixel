@@ -25,17 +25,18 @@ public class Button {
 		this.touched = false;
 		this.clicked = false;
 
-		Vector2 p = MenuInput.getMousePos();
-		boolean c = MenuInput.getMouseClicked();
+		Vector2 p = GameInput.getMousePos();
+		boolean c = GameInput.getMouseClicked();
 		if (this.rect.contains(p)) {
 			this.touched = true;
-			System.out.println("mouseover");
+			System.out.println(cmd);
 		}
 		if (touched && c) {
 			this.clicked = true;
+			System.out.println(cmd + " clicked");
 		}
 
-		this.font.draw(batch, text, rect.getX(), rect.getY());
+		this.font.draw(batch, text, rect.getX(), rect.getY() + (rect.getHeight()*0.8f));
 	}
 
 	void offset(float x, float y) {
@@ -44,6 +45,10 @@ public class Button {
 
 	Vector2 getPosition() {
 		return new Vector2(this.rect.getX(), this.rect.getY());
+	}
+
+	Vector2 getSize() {
+		return new Vector2(this.rect.getHeight(), this.rect.getWidth());
 	}
 
 	boolean isTouched() {
