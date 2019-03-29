@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -17,8 +16,7 @@ public class MainScreen implements Screen {
 	private Texture cloud1, cloud2;
 	private Sprite plane;
    	private ArrayList<Vector2> clouds = new ArrayList<>(); // create a sea of clouds
-    private float yPos = -100;
-    private int xOffset = 0;
+	private int xOffset = 0;
     private ArrayList<Button> buttons;
 
     private OrthographicCamera camera;
@@ -45,16 +43,16 @@ public class MainScreen implements Screen {
         }
 
         buttons = new ArrayList<>();
-        buttons.add(new Button(60, 280, 380, 60, "Play", game.batch, game.menuFont, Command.PLAY));
-        buttons.add(new Button(60, 200, 380, 60, "Instructions", game.batch, game.menuFont, Command.INSTR));
-        buttons.add(new Button(60, 120, 380, 60, "Quit", game.batch, game.menuFont, Command.QUIT));
+        buttons.add(new Button(100, 280, 120, 60, "Play", game.batch, game.menuFont, Command.PLAY));
+        buttons.add(new Button(100, 200, 380, 60, "Instructions", game.batch, game.menuFont, Command.INSTR));
+        buttons.add(new Button(100, 120, 120, 60, "Quit", game.batch, game.menuFont, Command.QUIT));
 	 }
 
 
 	@Override
 	public void render(float delta) {
-        //camera.translate(1, 0);
-        //xOffset += 1;
+        camera.translate(1, 0);
+        xOffset += 1;
 
         Gdx.gl.glClearColor(0.96f, 0.96f, 0.96f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -68,37 +66,14 @@ public class MainScreen implements Screen {
         }
         plane.draw(game.batch);
 
-        String s1 = "Aeropixel";
-        String s2 = "Play";
-        String s3 = "Instructions";
-        String s4 = "Quit";
-        Rectangle r2 = new Rectangle(60 + xOffset, 280, 380, 60);
-        Rectangle r3 = new Rectangle(60 + xOffset, 200, 380, 60);
-        Rectangle r4 = new Rectangle(60 + xOffset, 120, 380, 60);
+        game.titleFont.draw(game.batch, "Aeropixel", 60 + xOffset, 580);
 
-        /*if (r2.contains(Gdx.input.getX() + xOffset, WINDOW_SIZE.y - Gdx.input.getY())) {
-            yPos = 300;
-            if (Gdx.input.isTouched()) {
-                startGame();
-            }
-        } else if (r3.contains(Gdx.input.getX() + xOffset, WINDOW_SIZE.y - Gdx.input.getY())) {
-            yPos = 220;
-        } else if (r4.contains(Gdx.input.getX() + xOffset, WINDOW_SIZE.y - Gdx.input.getY())) {
-            yPos = 140;
-            if (Gdx.input.isTouched()) {
-                quit();
-            }
-        } else {
-            yPos = -100; // default
-        }*/
-        game.titleFont.draw(game.batch, s1, 60 + xOffset, 580);
-
-        yPos = -100;
+		float yPos = -100;
         for (Button b : buttons) {
         	b.update();
-        	//b.offset(1, 0);
+        	b.offset(xOffset, 0);
         	if (b.isTouched()) {
-        		yPos = b.getPosition().y + b.getSize().x*0.8f;
+        		yPos = b.getPosition().y+ b.getSize().x/2;
         		if (b.isClicked()) {
         			switch (b.cmd) {
 				        case PLAY:

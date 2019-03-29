@@ -12,6 +12,7 @@ public class Button {
 	private boolean touched, clicked;
 	private BitmapFont font;
 	Command cmd;
+	private Vector2 offset;
 
 	Button(float x, float y, float w, float h, String t, SpriteBatch b, BitmapFont f, Command c) {
 		this.rect = new Rectangle(x, y, w, h);
@@ -19,6 +20,7 @@ public class Button {
 		this.batch = b;
 		this.font = f;
 		this.cmd = c;
+		this.offset = new Vector2(0, 0);
 	}
 
 	void update() {
@@ -29,18 +31,16 @@ public class Button {
 		boolean c = GameInput.getMouseClicked();
 		if (this.rect.contains(p)) {
 			this.touched = true;
-			System.out.println(cmd);
 		}
 		if (touched && c) {
 			this.clicked = true;
-			System.out.println(cmd + " clicked");
 		}
 
-		this.font.draw(batch, text, rect.getX(), rect.getY() + (rect.getHeight()*0.8f));
+		this.font.draw(batch, text, rect.getX() + offset.x, rect.getY() + offset.y + (rect.getHeight()*0.8f));
 	}
 
 	void offset(float x, float y) {
-		this.rect.setPosition(rect.getX() + x, rect.getY() + y);
+		this.offset = new Vector2(x, y);
 	}
 
 	Vector2 getPosition() {
