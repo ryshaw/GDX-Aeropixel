@@ -13,9 +13,8 @@ import java.util.ArrayList;
 
 public class MainScreen implements Screen {
   	private final Aeropixel game;
-	private Texture cloud1, cloud2;
 	private Sprite plane;
-   	private ArrayList<Vector2> clouds = new ArrayList<>(); // create a sea of clouds
+	private ArrayList<Cloud> clouds = new ArrayList<>();
 	private int xOffset = 0;
     private ArrayList<Button> buttons;
 
@@ -25,21 +24,26 @@ public class MainScreen implements Screen {
 	 MainScreen(final Aeropixel game) {
 		this.game = game;
 
-        cloud1 = new Texture("cloud1.png");
-        cloud2 = new Texture("cloud2.png");
-        plane = new Sprite(new Texture("plane.png"));
+		 ArrayList<Texture> cloudTextures = new ArrayList<>();
+		 for (int i = 1; i < 6; i++) {
+			String file = "cloud" + i + ".png";
+			cloudTextures.add(new Texture(file));
+		}
+
+		plane = new Sprite(new Texture("plane.png"));
         plane.rotate(270);
         plane.setCenter(-100, -100);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
 
-        for (int i = 0; i < 100; i++) {
-            float randomX = MathUtils.random(0, 8000);
-            float randomY = MathUtils.random(-40, 640);
+        for (int i = 0; i < 80; i++) {
+        	int index = MathUtils.random(0, 4);
+            float x = MathUtils.random(0, 10000);
+            float y = MathUtils.random(20, 620);
+            int r = MathUtils.random(1, 360);
 
-            Vector2 v = new Vector2(randomX, randomY);
-            clouds.add(v);
+            clouds.add(new Cloud(cloudTextures.get(index), new Vector2(x, y), r));
         }
 
         buttons = new ArrayList<>();
@@ -51,8 +55,13 @@ public class MainScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-        camera.translate(1, 0);
-        xOffset += 1;
+        camera.translate(2, 0);
+        xOffset += 2;
+
+        if (xOffset == 10000) {
+        	xOffset = -800;
+        	camera.translate(-10800, 0);
+        }
 
         Gdx.gl.glClearColor(0.96f, 0.96f, 0.96f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -60,11 +69,10 @@ public class MainScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        for (int i = 1; i < clouds.size() / 2; i++) {
-            game.batch.draw(cloud1, clouds.get(i).x, clouds.get(i).y);
-            game.batch.draw(cloud2, clouds.get(clouds.size() - i).x, clouds.get(clouds.size() - i).y);
+        for (Cloud c : clouds) {
+        	c.sprite.draw(game.batch);
         }
-        plane.draw(game.batch);
+		plane.draw(game.batch);
 
         game.titleFont.draw(game.batch, "Aeropixel", 60 + xOffset, 580);
 
@@ -73,7 +81,7 @@ public class MainScreen implements Screen {
         	b.update();
         	b.offset(xOffset, 0);
         	if (b.isTouched()) {
-        		yPos = b.getPosition().y+ b.getSize().x/2;
+        		yPos = b.getPosition().y + b.getSize().x/2;
         		if (b.isClicked()) {
         			switch (b.cmd) {
 				        case PLAY:
@@ -110,8 +118,10 @@ public class MainScreen implements Screen {
 
 	@Override
 	public void dispose() {
-        cloud1.dispose();
-        cloud2.dispose();
+        for (Cloud c : clouds) {
+        	c.sprite.getTexture().dispose();
+        }
+        plane.getTexture().dispose();
 	}
 
 
