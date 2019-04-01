@@ -5,27 +5,28 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Button {
+class Button {
 	private Rectangle rect;
-	private String text;
 	private SpriteBatch batch;
 	private boolean touched, clicked;
+	boolean active;
 	private BitmapFont font;
 	Command cmd;
 	private Vector2 offset;
 
-	Button(float x, float y, float w, float h, String t, SpriteBatch b, BitmapFont f, Command c) {
+	Button(float x, float y, float w, float h, SpriteBatch b, BitmapFont f) {
 		this.rect = new Rectangle(x, y, w, h);
-		this.text = t;
 		this.batch = b;
 		this.font = f;
-		this.cmd = c;
 		this.offset = new Vector2(0, 0);
+		this.active = true;
 	}
 
-	void update() {
+	void update(String text) {
 		this.touched = false;
 		this.clicked = false;
+
+		if (!active) return;
 
 		Vector2 p = GameInput.getMousePos();
 		boolean c = GameInput.getMouseClicked();
@@ -43,12 +44,16 @@ public class Button {
 		this.offset = new Vector2(x, y);
 	}
 
-	Vector2 getPosition() {
-		return new Vector2(this.rect.getX(), this.rect.getY());
+	float getX() {
+		return this.rect.getX();
 	}
 
-	Vector2 getSize() {
-		return new Vector2(this.rect.getHeight(), this.rect.getWidth());
+	float getY() {
+		return this.rect.getY();
+	}
+
+	float getHeight() {
+		return this.rect.getHeight();
 	}
 
 	boolean isTouched() {
