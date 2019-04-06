@@ -23,11 +23,10 @@ public class MenuScreen implements Screen {
     private String display = "Menu";
 
 
-
 	 MenuScreen(final Aeropixel game) {
 		this.game = game;
 
-		plane = new Sprite(new Texture("plane.png"));
+		plane = new Sprite(game.manager.get("images/plane.png", Texture.class));
         plane.rotate(270);
 
         camera = new OrthographicCamera();
@@ -67,9 +66,7 @@ public class MenuScreen implements Screen {
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
 
-		for (Cloud c : clouds) {
-			c.sprite.draw(game.batch);
-		}
+		for (Cloud c : clouds) c.sprite.draw(game.batch);
 
 		for (String s : buttons.keySet()) {
 			Button b = buttons.get(s);
@@ -101,13 +98,13 @@ public class MenuScreen implements Screen {
 
 		switch (display) {
 			case "Menu":
-				game.largeFont.draw(game.batch, "Aeropixel", 60 + xOffset, 580);
+				game.largeFont.draw(game.batch, "Aeropixel", 40 + xOffset, 580);
 				break;
 			case "Instructions":
 				renderInstructions();
 				break;
 		}
-		game.smallFont.draw(game.batch, "a game by Ryan Shaw", 540 + xOffset, 60);
+		game.smallFont.draw(game.batch, "a game by Ryan Shaw", 520 + xOffset, 60);
 
 		game.batch.end();
 
@@ -143,10 +140,6 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void dispose() {
-        for (Cloud c : clouds) {
-        	c.sprite.getTexture().dispose();
-        }
-        plane.getTexture().dispose();
 	}
 
 	private void renderInstructions() {
@@ -155,7 +148,7 @@ public class MenuScreen implements Screen {
 				"How far you get determines your score and points attained.\n" +
 				"After each sortie, you will have a chance to buy upgrades.";
 		String s2 = "Controls:\nTurn: A, D    Boost: W    Fire: Space    Switch Weapons: S";
-		game.largeFont.draw(game.batch, "Instructions", 60 + xOffset, 580);
+		game.mediumFont.draw(game.batch, "Instructions", 80 + xOffset, 580);
 		game.smallFont.draw(game.batch, s1, 60 + xOffset, 480);
 		game.smallFont.draw(game.batch, s2, 60 + xOffset, 280);
 	}

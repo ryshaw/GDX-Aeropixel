@@ -10,7 +10,7 @@ class Bullet {
     private int speed = 3000;
 
     Bullet(float x, float y, float direction) {
-        sprite = new Sprite(new Texture("bullet.png"));
+        sprite = new Sprite(new Texture("images/bullet.png"));
         this.x = x;
         this.y = y;
         this.direction = direction;

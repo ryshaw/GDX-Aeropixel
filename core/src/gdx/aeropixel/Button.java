@@ -38,6 +38,7 @@ class Button {
 		}
 
 		this.font.draw(batch, text, rect.getX() + offset.x, rect.getY() + offset.y + (rect.getHeight()*0.8f));
+
 	}
 
 	void offset(float x, float y) {

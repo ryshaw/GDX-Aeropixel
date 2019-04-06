@@ -29,9 +29,9 @@ class Player {
     private static ArrayList keysDown;
 
 
-    Player() {
+    Player(Texture t) {
         rectangle = new Rectangle(position.x - size/2, position.y - size/2, size, size);
-        sprite = new Sprite(new Texture("plane.png"));
+        sprite = new Sprite(t);
         sprite.setCenter(position.x, position.y);
         bullets = new Array<>();
     }

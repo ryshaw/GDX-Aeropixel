@@ -7,16 +7,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
   	private final Aeropixel game;
-	private Texture cloud1, cloud2;
    	private static final Vector2 MAP_SIZE = new Vector2(-8000, 8000);
-   	private Array<Vector2> clouds = new Array<>();
+   	private ArrayList<Cloud> clouds = new ArrayList<>();
     private static ArrayList<Bullet> bullets;
 
     static OrthographicCamera camera;
@@ -25,37 +23,34 @@ public class GameScreen implements Screen {
 	GameScreen(final Aeropixel game) {
 		this.game = game;
 
-        cloud1 = new Texture("cloud1.png");
-        cloud2 = new Texture("cloud2.png");
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
 
-        for (int i = 0; i < 2000; i++) {
-            float randomX = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);
-            float randomY = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);
+		for (int i = 0; i < 1000; i++) {
+			int index = MathUtils.random(0, 4);
+			float x = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);
+			float y = MathUtils.random(MAP_SIZE.x, MAP_SIZE.y);
+			int r = MathUtils.random(1, 360);
 
-            Vector2 v = new Vector2(randomX, randomY);
-            clouds.add(v);
-        }
+			clouds.add(new Cloud(game.clouds.get(index), new Vector2(x, y), r));
+		}
 
         bullets = new ArrayList<>();
-        new Player();
+        new Player(game.manager.get("images/plane.png", Texture.class));
 	}
 
 
 	@Override
 	public void render(float delta) {
-        Gdx.gl.glClearColor(0.999f, 0.999f, 0.999f, 1);
+        Gdx.gl.glClearColor(1f, 1f, 1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        for (int i = 0; i < 2000/2; i++) {
-            game.batch.draw(cloud1, clouds.get(i).x, clouds.get(i).y);
-            game.batch.draw(cloud2, clouds.get(2000/2+i).x, clouds.get(2000/2+i).y);
-        }
-        Player.sprite.draw(game.batch);
+
+		for (Cloud c : clouds) c.sprite.draw(game.batch);
+
+		Player.sprite.draw(game.batch);
         for (Bullet b : bullets) b.sprite.draw(game.batch);
 
         game.batch.end();
@@ -95,8 +90,6 @@ public class GameScreen implements Screen {
 
     @Override
    	public void dispose() {
-	     cloud1.dispose();
-	     cloud2.dispose();
 	     Player.dispose();
 	     for (Bullet b : bullets) b.dispose();
    	}
