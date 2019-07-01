@@ -1,67 +1,68 @@
 package gdx.aeropixel;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-class Button {
-	private Rectangle rect;
-	private SpriteBatch batch;
-	private boolean touched, clicked;
-	boolean active;
+class Button extends Actor {
 	private BitmapFont font;
-	Command cmd;
-	private Vector2 offset;
+	private String text;
+	private Sprite plane;
+	private boolean mouseover;
 
-	Button(float x, float y, float w, float h, SpriteBatch b, BitmapFont f) {
-		this.rect = new Rectangle(x, y, w, h);
-		this.batch = b;
-		this.font = f;
-		this.offset = new Vector2(0, 0);
-		this.active = true;
-	}
-
-	void update(String text) {
-		this.touched = false;
-		this.clicked = false;
-
-		if (!active) return;
-
-		Vector2 p = GameInput.getMousePos();
-		boolean c = GameInput.getMouseClicked();
-		if (this.rect.contains(p)) {
-			this.touched = true;
+	Button(String t, float x, float y, float w, float h, int fontSize) {
+		switch (fontSize) {
+			case 1:
+				this.font = Aeropixel.smallFont;
+				break;
+			case 2:
+				this.font = Aeropixel.mediumFont;
+				break;
+			case 3:
+				this.font = Aeropixel.largeFont;
+				break;
 		}
-		if (touched && c) {
-			this.clicked = true;
-		}
+		this.text = t;
+		setBounds(x, y, w, h);
 
-		this.font.draw(batch, text, rect.getX() + offset.x, rect.getY() + offset.y + (rect.getHeight()*0.8f));
+		ClickListener onClick = new ClickListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				Button b = (Button) event.getTarget();
+				StartStage s = (StartStage) b.getParent().getStage();
+				s.clicked(b.text);
+				return true;
+			}
 
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				mouseover = true;
+			}
+
+			public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				mouseover = false;
+			}
+		};
+		addListener(onClick);
+
+		plane = new Sprite(new Texture("images/plane.png"));
+		plane.rotate(270);
+		plane.setCenter(x - 40, y + h/2);
+		mouseover = false;
 	}
 
-	void offset(float x, float y) {
-		this.offset = new Vector2(x, y);
+	public void act(float delta) { super.act(delta); }
+
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		this.font.draw(batch, this.text, this.getX(), this.getY() + (this.getHeight()*0.8f));
+		// this.getHeight()*0.8f so that text is inside button
+		if (mouseover) this.plane.draw(batch);
 	}
 
-	float getX() {
-		return this.rect.getX();
-	}
-
-	float getY() {
-		return this.rect.getY();
-	}
-
-	float getHeight() {
-		return this.rect.getHeight();
-	}
-
-	boolean isTouched() {
-		return touched;
-	}
-
-	boolean isClicked() {
-		return clicked;
+	void dispose() {
+		this.plane.getTexture().dispose();
 	}
 }

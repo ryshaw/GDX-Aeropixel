@@ -11,6 +11,7 @@ public class DesktopLauncher {
   		config.width = 800;
   		config.height = 640;
   		config.vSyncEnabled = true;
+  		config.resizable = false;
   		new LwjglApplication(new Aeropixel(), config);
 	}
 }

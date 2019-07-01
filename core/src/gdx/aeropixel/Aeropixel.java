@@ -19,7 +19,7 @@ public class Aeropixel extends Game {
 
 	AssetManager manager;
 	SpriteBatch batch;
-    BitmapFont smallFont, mediumFont, largeFont;
+    static BitmapFont smallFont, mediumFont, largeFont;
     ArrayList<Texture> clouds = new ArrayList<>();
     Screen currentScreen;
     static final Vector2 WINDOW_SIZE = new Vector2(800, 640);
@@ -34,6 +34,7 @@ public class Aeropixel extends Game {
 		manager.finishLoading();
 
 		batch = new SpriteBatch();
+
         FreeTypeFontGenerator generatorBold = new FreeTypeFontGenerator(Gdx.files.internal("PixelOperator-Bold.ttf"));
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("PixelOperator.ttf"));
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
@@ -52,15 +53,12 @@ public class Aeropixel extends Game {
 
 		generatorBold.dispose();
 
-        GameInput input = new GameInput();
-        Gdx.input.setInputProcessor(input);
-
 		for (int i = 1; i < 6; i++) {
 			String file = "images/cloud" + i + ".png";
 			clouds.add(manager.get(file, Texture.class));
 		}
 
-        this.currentScreen = new MenuScreen(this);
+        this.currentScreen = new StartScreen(this);
         this.setScreen(currentScreen);
 	}
 

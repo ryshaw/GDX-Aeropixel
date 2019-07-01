@@ -22,6 +22,7 @@ public class GameScreen implements Screen {
 
 	GameScreen(final Aeropixel game) {
 		this.game = game;
+		Gdx.input.setInputProcessor(new GameInput());
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
