@@ -1,19 +1,21 @@
 package gdx.aeropixel;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 
 class Player {
 	private static Rectangle rectangle;
 	static Sprite sprite;
+	private AssetManager manager;
+	private static ArrayList<Texture> sprites;
 	private static Vector2 position = new Vector2(400, 52);
 	private static Vector3 cameraCenter = new Vector3(400, 52, 0);
 	private static float size = 64;
@@ -25,15 +27,17 @@ class Player {
 	private static float speedTime = 0;
 	private static float timeBetweenShots = 0;
 
-	private static Array<Bullet> bullets;
+	private static ArrayList<Bullet> bullets;
 	private static ArrayList keysDown;
 
 
-	Player(Texture t) {
+	Player(AssetManager m) {
 		rectangle = new Rectangle(position.x - size/2, position.y - size/2, size, size);
-		sprite = new Sprite(t);
+		bullets = new ArrayList<>();
+		manager = m;
+		createSprites();
+		sprite = new Sprite(sprites.get(4));
 		sprite.setCenter(position.x, position.y);
-		bullets = new Array<>();
 	}
 
 
@@ -65,6 +69,7 @@ class Player {
 
 		rotate();
 		move();
+		sprite.setRegion(chooseSprite());
 
 		timeBetweenShots += Gdx.graphics.getDeltaTime();
 	}
@@ -96,6 +101,26 @@ class Player {
 		Vector2 front = GameScreen.getVelocity(rotation, 40, false);
 		GameScreen.addProjectile(new Bullet(position.x + front.x, position.y + front.y, rotation));
 	}
+
+	private void createSprites() {
+		// 0-3: left, 4: default, 5-8: right
+		sprites = new ArrayList<>();
+		for (int i = 4; i > 0; i--) {
+			sprites.add(manager.get("images/left_" + i + ".png"));
+		}
+		sprites.add(manager.get("images/plane.png", Texture.class));
+		for (int i = 1; i < 5; i++) {
+			sprites.add(manager.get("images/right_" + i + ".png"));
+		}
+	}
+
+	private static Texture chooseSprite() {
+		// use rotation to determine which sprite
+		int index = Math.round(8 - (rotTime + 1) * 4);
+		return sprites.get(index);
+	}
+
+
 
 	static void dispose() {
 		sprite.getTexture().dispose();

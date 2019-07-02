@@ -25,11 +25,7 @@ class Bullet {
         sprite.setCenter(x, y);
     }
 
-    Vector2 getPosition() {
-        return new Vector2(x, y);
-    }
+    Vector2 getPosition() { return new Vector2(x, y); }
 
-    void dispose() {
-        sprite.getTexture().dispose();
-    }
+    void dispose() { sprite.getTexture().dispose(); }
 }
