@@ -1,48 +1,38 @@
 package gdx.aeropixel;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Pools;
 
 import java.util.ArrayList;
 
-class Player {
+class Player extends Entity {
 	private static Rectangle rectangle;
-	static Sprite sprite;
-	private AssetManager manager;
-	private static ArrayList<Texture> sprites;
-	private static Vector2 position = new Vector2(400, 52);
-	private static Vector3 cameraCenter = new Vector3(400, 52, 0);
-	private static float size = 64;
+	private static Vector2 position = new Vector2(400, 52); // locks plane
+	private static Vector3 cameraCenter = new Vector3(400, 52, 0); // locks camera
 	private static float rotation = 0;
 
-	private static float moveSpeed = 400;
+	private static int[] speed = {300, 500}; // sets min and max speed
 
-	private static float rotTime = 0;
-	private static float speedTime = 0;
+	private static float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
+	private static float speedTime = 0; // 0 = neutral, 1 = speedup
 	private static float timeBetweenShots = 0;
 
-	private static ArrayList<Bullet> bullets;
-	private static ArrayList keysDown;
-
-
-	Player(AssetManager m) {
-		rectangle = new Rectangle(position.x - size/2, position.y - size/2, size, size);
-		bullets = new ArrayList<>();
-		manager = m;
+	Player() {
+		rectangle = new Rectangle(position.x - 32, position.y - 32, 64, 64);
 		createSprites();
-		sprite = new Sprite(sprites.get(4));
+		sprite = new Sprite(tex.get(4));
 		sprite.setCenter(position.x, position.y);
 	}
 
-
-	static void update() {
-		keysDown = GameInput.getKeyInput();
+	@Override
+	void update(float delta) {
+		ArrayList keysDown = GameInput.getKeyInput();
 
 		if (keysDown.contains("D")) {
 			rotTime -= 2 * Gdx.graphics.getDeltaTime();
@@ -74,7 +64,7 @@ class Player {
 		timeBetweenShots += Gdx.graphics.getDeltaTime();
 	}
 
-	private static void rotate() {
+	private void rotate() {
 		rotTime = MathUtils.clamp(rotTime, -1, 1);
 		float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
 
@@ -84,9 +74,9 @@ class Player {
 		sprite.setRotation(rotation);
 	}
 
-	private static void move() {
+	private void move() {
 		speedTime = MathUtils.clamp(speedTime, 0, 1);
-		moveSpeed = MathUtils.lerp(400, 600, speedTime);
+		float moveSpeed = MathUtils.lerp(speed[0], speed[1], speedTime);
 
 		Vector2 delta = GameScreen.getVelocity(rotation, moveSpeed, true);
 		Vector2 push = GameScreen.getVelocity(rotation, 10 * speedTime, false);
@@ -97,35 +87,27 @@ class Player {
 		sprite.setCenter(position.x, position.y);
 	}
 
-	private static void shoot() {
+	private void shoot() {
 		Vector2 front = GameScreen.getVelocity(rotation, 40, false);
-		GameScreen.addProjectile(new Bullet(position.x + front.x, position.y + front.y, rotation));
+		Bullet b = Pools.obtain(Bullet.class);
+		b.init(position.x + front.x, position.y + front.y, rotation);
+		EntitySystem.addEntity(b);
 	}
 
 	private void createSprites() {
 		// 0-3: left, 4: default, 5-8: right
-		sprites = new ArrayList<>();
 		for (int i = 4; i > 0; i--) {
-			sprites.add(manager.get("images/left_" + i + ".png"));
+			tex.add(EntitySystem.getTexture("left_" + i));
 		}
-		sprites.add(manager.get("images/plane.png", Texture.class));
+		tex.add(EntitySystem.getTexture("plane"));
 		for (int i = 1; i < 5; i++) {
-			sprites.add(manager.get("images/right_" + i + ".png"));
+			tex.add(EntitySystem.getTexture("right_" + i));
 		}
 	}
 
-	private static Texture chooseSprite() {
+	private Texture chooseSprite() {
 		// use rotation to determine which sprite
 		int index = Math.round(8 - (rotTime + 1) * 4);
-		return sprites.get(index);
-	}
-
-
-
-	static void dispose() {
-		sprite.getTexture().dispose();
-		for (Bullet b : bullets) {
-			b.dispose();
-		}
+		return tex.get(index);
 	}
 }

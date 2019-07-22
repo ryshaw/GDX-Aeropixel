@@ -1,31 +1,32 @@
 package gdx.aeropixel;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pool;
 
-class Bullet {
-    Sprite sprite;
-    private float x, y, direction;
-    private int speed = 3000;
+class Bullet extends Entity implements Pool.Poolable {
 
-    Bullet(float x, float y, float direction) {
-        sprite = new Sprite(new Texture("images/bullet.png"));
-        this.x = x;
-        this.y = y;
-        this.direction = direction;
-        sprite.setCenter(x, y);
-        sprite.rotate(direction);
+    Bullet() {
+        super();
     }
 
-    void update() {
-        Vector2 delta = GameScreen.getVelocity(direction, speed, true);
-        x += delta.x;
-        y += delta.y;
+    void init(float x, float y, float dir) {
+        sprite = new Sprite(EntitySystem.getTexture("bullet"));
         sprite.setCenter(x, y);
+        sprite.rotate(dir);
     }
 
-    Vector2 getPosition() { return new Vector2(x, y); }
+    @Override
+    void update(float dT) {
+        Vector2 delta = GameScreen.getVelocity(sprite.getRotation(), 2000, true);
+        sprite.translate(delta.x, delta.y);
+        if (Math.abs(sprite.getX()) > GameScreen.MAP_SIZE.y || Math.abs(sprite.getY()) > GameScreen.MAP_SIZE.y) {
+            EntitySystem.removeEntity(this);
+        }
+    }
 
-    void dispose() { sprite.getTexture().dispose(); }
+    @Override
+    public void reset() {
+        this.setPos(new Vector2(0, 0));
+    }
 }

@@ -1,0 +1,20 @@
+currently working on:
+- BulletSystem and other texture stuff
+
+to-do immediately:
+- enemies
+
+further on:
+- collision
+- damage and game over
+- post-round menu system
+- upgrades
+- different weapons
+- AI for enemies
+- sound and music
+
+currently have:
+- functioning main menu
+- animated turning
+- bullets
+- randomly-placed clouds
