@@ -3,6 +3,7 @@ package gdx.aeropixel;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
@@ -52,4 +53,18 @@ class EntitySystem {
 		for (Entity e : entities) { e.draw(batch); } }
 
 	static Texture getTexture(String path) { return sys.manager.get("images/" + path + ".png"); }
+
+	static Vector2 getEnemyPos() {
+		return sys.getEnemyPosSys();
+	}
+
+	private Vector2 getEnemyPosSys() {
+		for (Entity e : entities) {
+			if (e instanceof Enemy) {
+				return e.getPosition();
+			}
+		}
+		return null;
+	}
+
 }

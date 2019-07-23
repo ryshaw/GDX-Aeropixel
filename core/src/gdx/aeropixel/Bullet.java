@@ -26,7 +26,5 @@ class Bullet extends Entity implements Pool.Poolable {
     }
 
     @Override
-    public void reset() {
-        this.setPos(new Vector2(0, 0));
-    }
+    public void reset() { sprite.setCenter(0, 0); }
 }

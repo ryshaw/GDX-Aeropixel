@@ -21,8 +21,6 @@ public class StartScreen implements Screen {
 	 StartScreen(final Aeropixel game) {
 		this.game = game;
 
-
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
 

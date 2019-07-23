@@ -11,14 +11,12 @@ import java.util.ArrayList;
 public abstract class Entity {
 	Sprite sprite;
 	ArrayList<Texture> tex;
-	private Vector2 pos;
 	private float dir;
 	private Vector2 speed;
 	private ArrayList<Rectangle> hitbox;
 
 	Entity() {
 		this.tex = new ArrayList<>();
-		this.pos = new Vector2();
 		this.dir = 0;
 		this.speed = new Vector2();
 		this.hitbox = new ArrayList<>();
@@ -30,21 +28,11 @@ public abstract class Entity {
 
 	void dispose() {}
 
-	public Vector2 getPos() { return pos; }
-
-	void setPos(Vector2 pos) { this.pos = pos; }
-
-	public float getDirection() { return dir; }
-
-	public void setDirection(float dir) { this.dir = dir; }
-
-	public Vector2 getSpeed() { return speed; }
-
-	public void setSpeed(Vector2 speed) { this.speed = speed; }
-
-	public ArrayList<Rectangle> getHitbox() { return hitbox; }
-
-	public void setHitbox(ArrayList<Rectangle> hitbox) { this.hitbox = hitbox; }
+	public Vector2 getPosition() {
+		float x = sprite.getX() + sprite.getWidth() / 2;
+		float y = sprite.getY() + sprite.getHeight() / 2;
+		return new Vector2(x, y);
+	}
 
 	@Override
 	public String toString() {

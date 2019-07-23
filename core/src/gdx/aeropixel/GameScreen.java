@@ -1,6 +1,7 @@
 package gdx.aeropixel;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,16 +14,21 @@ public class GameScreen implements Screen {
   	private final Aeropixel game;
    	static final Vector2 MAP_SIZE = new Vector2(-8000, 8000);
    	private ArrayList<Cloud> clouds = new ArrayList<>();
+   	private GameStage stage;
 
     static OrthographicCamera camera;
 
-
 	GameScreen(final Aeropixel game) {
 		this.game = game;
-		Gdx.input.setInputProcessor(new GameInput());
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Aeropixel.WINDOW_SIZE.x, Aeropixel.WINDOW_SIZE.y);
+
+        stage = new GameStage(this);
+		InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(new GameInput());
+		Gdx.input.setInputProcessor(multiplexer);
 
 		for (int i = 0; i < 1000; i++) {
 			int index = MathUtils.random(0, 4);
@@ -35,6 +41,9 @@ public class GameScreen implements Screen {
 
 		EntitySystem.init(game.manager, game.batch);
         EntitySystem.addEntity(new Player());
+		Enemy enemy = new Enemy();
+        enemy.init(0, 0, 0);
+        EntitySystem.addEntity(enemy);
 	}
 
 
@@ -51,6 +60,10 @@ public class GameScreen implements Screen {
         game.batch.end();
 
 		EntitySystem.update(delta);
+
+		stage.act(delta);
+		stage.draw();
+
         camera.update();
 	}
 

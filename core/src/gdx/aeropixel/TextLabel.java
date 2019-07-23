@@ -26,6 +26,10 @@ class TextLabel extends Actor {
 
 	public void act(float delta) { super.act(delta); }
 
+	void setText(String t) {
+		this.text = t;
+	}
+
 	@Override
 	public void draw(Batch batch, float parentAlpha) { this.font.draw(batch, this.text, this.getX(), this.getY()); }
 

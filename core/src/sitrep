@@ -1,11 +1,10 @@
 currently working on:
-- BulletSystem and other texture stuff
-
-to-do immediately:
 - enemies
 
-further on:
+to-do immediately:
 - collision
+
+further on:
 - damage and game over
 - post-round menu system
 - upgrades
@@ -18,3 +17,4 @@ currently have:
 - animated turning
 - bullets
 - randomly-placed clouds
+- EntitySystem

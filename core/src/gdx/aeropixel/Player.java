@@ -110,4 +110,8 @@ class Player extends Entity {
 		int index = Math.round(8 - (rotTime + 1) * 4);
 		return tex.get(index);
 	}
+
+	static Vector2 getPos() {
+		return position;
+	}
 }

@@ -37,13 +37,9 @@ class Button extends Actor {
 				return true;
 			}
 
-			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				mouseover = true;
-			}
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) { mouseover = true; }
 
-			public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				mouseover = false;
-			}
+			public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) { mouseover = false; }
 		};
 		addListener(onClick);
 
@@ -62,7 +58,5 @@ class Button extends Actor {
 		if (mouseover) this.plane.draw(batch);
 	}
 
-	void dispose() {
-		this.plane.getTexture().dispose();
-	}
+	void dispose() { this.plane.getTexture().dispose(); }
 }
