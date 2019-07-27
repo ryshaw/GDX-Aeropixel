@@ -15,7 +15,7 @@ public class Enemy extends Entity implements Pool.Poolable {
 
 	@Override
 	void update(float delta) {
-		sprite.translateY(200 * delta);
+		sprite.translateY(20 * delta);
 	}
 
 	@Override

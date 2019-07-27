@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pools;
@@ -12,22 +12,22 @@ import com.badlogic.gdx.utils.Pools;
 import java.util.ArrayList;
 
 class Player extends Entity {
-	private static Rectangle rectangle;
+	static Polygon hitbox;
 	private static Vector2 position = new Vector2(400, 52); // locks plane
 	private static Vector3 cameraCenter = new Vector3(400, 52, 0); // locks camera
 	private static float rotation = 0;
 
-	private static int[] speed = {300, 500}; // sets min and max speed
+	private static int[] speed = {20, 40}; // sets min and max speed
 
 	private static float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
 	private static float speedTime = 0; // 0 = neutral, 1 = speedup
 	private static float timeBetweenShots = 0;
 
 	Player() {
-		rectangle = new Rectangle(position.x - 32, position.y - 32, 64, 64);
 		createSprites();
 		sprite = new Sprite(tex.get(4));
 		sprite.setCenter(position.x, position.y);
+		createPolygon();
 	}
 
 	@Override
@@ -64,6 +64,9 @@ class Player extends Entity {
 		timeBetweenShots += Gdx.graphics.getDeltaTime();
 	}
 
+	//polygon = new Polygon(new float[]{0,0,bounds.width,0,bounds.width,bounds.height,0,bounds.height,0,0});
+
+
 	private void rotate() {
 		rotTime = MathUtils.clamp(rotTime, -1, 1);
 		float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
@@ -72,6 +75,7 @@ class Player extends Entity {
 		rotation += rotationDelta;
 		GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotationDelta);
 		sprite.setRotation(rotation);
+		hitbox.setRotation(rotation);
 	}
 
 	private void move() {
@@ -85,6 +89,7 @@ class Player extends Entity {
 		cameraCenter.add(delta.x, delta.y, 0);
 		position.set(cameraCenter.x + push.x, cameraCenter.y + push.y);
 		sprite.setCenter(position.x, position.y);
+		hitbox.translate(delta.x, delta.y);
 	}
 
 	private void shoot() {
@@ -93,6 +98,8 @@ class Player extends Entity {
 		b.init(position.x + front.x, position.y + front.y, rotation);
 		EntitySystem.addEntity(b);
 	}
+
+	static Vector2 getPos() { return position; }
 
 	private void createSprites() {
 		// 0-3: left, 4: default, 5-8: right
@@ -110,8 +117,12 @@ class Player extends Entity {
 		int index = Math.round(8 - (rotTime + 1) * 4);
 		return tex.get(index);
 	}
-
-	static Vector2 getPos() {
-		return position;
+	
+	private void createPolygon() {
+		float[] vertices = new float[]{0,44, 26,44, 26,64, 39,64, 39,44, 64,44, 64,32, 39,32, 39,10,
+			44,10, 44,0, 20,0, 20,10, 26,10, 26,32, 0,32, 0,44};
+		hitbox = new Polygon(vertices);
+		hitbox.translate(position.x - 32, position.y - 32);
 	}
+
 }
