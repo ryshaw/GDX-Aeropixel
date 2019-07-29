@@ -3,7 +3,8 @@ package gdx.aeropixel;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
@@ -24,6 +25,10 @@ class EntitySystem {
 		this.batch = b;
 	}
 
+	static ArrayList<Entity> getEntities() {
+		return sys.entities;
+	}
+
 	static void init(AssetManager m, SpriteBatch b) { sys = new EntitySystem(m, b); }
 
 	static void addEntity(Entity e) { sys.toAdd.add(e); }
@@ -35,6 +40,7 @@ class EntitySystem {
 	private void updateSys(float deltaTime) {
 		for (Entity entity : entities) {
 			entity.update(deltaTime);
+			checkCollisions(entity);
 		}
 		entities.addAll(toAdd);
 		toAdd.clear();
@@ -54,17 +60,29 @@ class EntitySystem {
 
 	static Texture getTexture(String path) { return sys.manager.get("images/" + path + ".png"); }
 
-	static Vector2 getEnemyPos() {
-		return sys.getEnemyPosSys();
-	}
+	static Enemy getEnemy() { return sys.getEnemySys(); }
 
-	private Vector2 getEnemyPosSys() {
+	private Enemy getEnemySys() {
 		for (Entity e : entities) {
 			if (e instanceof Enemy) {
-				return e.getPosition();
+				return (Enemy) e;
 			}
 		}
 		return null;
+	}
+
+	private void checkCollisions(Entity e1) {
+		for (Entity e2 : entities) {
+			if (!e1.equals(e2)) {
+				for (Polygon p1 : e1.hitbox) {
+					for (Polygon p2 : e2.hitbox) {
+						if (Intersector.overlapConvexPolygons(p1, p2)) {
+							e1.handleCollision(e2);
+						}
+					}
+				}
+			}
+		}
 	}
 
 }

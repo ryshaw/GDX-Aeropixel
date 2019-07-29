@@ -12,12 +12,11 @@ import com.badlogic.gdx.utils.Pools;
 import java.util.ArrayList;
 
 class Player extends Entity {
-	static Polygon hitbox;
-	private static Vector2 position = new Vector2(400, 52); // locks plane
+	static Vector2 position = new Vector2(400, 52); // locks plane
 	private static Vector3 cameraCenter = new Vector3(400, 52, 0); // locks camera
 	private static float rotation = 0;
 
-	private static int[] speed = {20, 40}; // sets min and max speed
+	private static int[] speed = {80, 160}; // sets min and max speed
 
 	private static float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
 	private static float speedTime = 0; // 0 = neutral, 1 = speedup
@@ -27,7 +26,8 @@ class Player extends Entity {
 		createSprites();
 		sprite = new Sprite(tex.get(4));
 		sprite.setCenter(position.x, position.y);
-		createPolygon();
+		createHitbox();
+		health = 2;
 	}
 
 	@Override
@@ -64,9 +64,6 @@ class Player extends Entity {
 		timeBetweenShots += Gdx.graphics.getDeltaTime();
 	}
 
-	//polygon = new Polygon(new float[]{0,0,bounds.width,0,bounds.width,bounds.height,0,bounds.height,0,0});
-
-
 	private void rotate() {
 		rotTime = MathUtils.clamp(rotTime, -1, 1);
 		float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
@@ -75,7 +72,11 @@ class Player extends Entity {
 		rotation += rotationDelta;
 		GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotationDelta);
 		sprite.setRotation(rotation);
-		hitbox.setRotation(rotation);
+		for (Polygon p : hitbox) {
+			p.setRotation(rotation);
+		}
+		float rotScale = Math.abs(rotTime) / 2;
+		hitbox[0].setScale(1 - rotScale, 1); // scales wing hitbox
 	}
 
 	private void move() {
@@ -89,7 +90,9 @@ class Player extends Entity {
 		cameraCenter.add(delta.x, delta.y, 0);
 		position.set(cameraCenter.x + push.x, cameraCenter.y + push.y);
 		sprite.setCenter(position.x, position.y);
-		hitbox.translate(delta.x, delta.y);
+		for (Polygon p : hitbox) {
+			p.setPosition(position.x, position.y);
+		}
 	}
 
 	private void shoot() {
@@ -99,9 +102,8 @@ class Player extends Entity {
 		EntitySystem.addEntity(b);
 	}
 
-	static Vector2 getPos() { return position; }
-
 	private void createSprites() {
+		tex = new ArrayList<>();
 		// 0-3: left, 4: default, 5-8: right
 		for (int i = 4; i > 0; i--) {
 			tex.add(EntitySystem.getTexture("left_" + i));
@@ -118,11 +120,13 @@ class Player extends Entity {
 		return tex.get(index);
 	}
 	
-	private void createPolygon() {
-		float[] vertices = new float[]{0,44, 26,44, 26,64, 39,64, 39,44, 64,44, 64,32, 39,32, 39,10,
-			44,10, 44,0, 20,0, 20,10, 26,10, 26,32, 0,32, 0,44};
-		hitbox = new Polygon(vertices);
-		hitbox.translate(position.x - 32, position.y - 32);
+	private void createHitbox() {
+		// to get a perfect hitbox, the right x-coordinate must be increased by 1
+		// wings: width of 64 & length of 12; fuselage: width of 12 & length of 64
+		Polygon wings = new Polygon(new float[]{-32,12, -32,0, 33,0, 33,12});
+		wings.translate(position.x, position.y);
+		Polygon fuselage = new Polygon(new float[]{-6,32, -6,-32, 7,-32, 7,32});
+		fuselage.translate(position.x, position.y);
+		hitbox = new Polygon[]{wings, fuselage};
 	}
-
 }

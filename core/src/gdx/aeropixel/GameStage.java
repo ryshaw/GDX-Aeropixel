@@ -27,10 +27,12 @@ class GameStage extends Stage {
 
 	@Override
 	public void act(float delta) {
-		Vector2 enemyPos = EntitySystem.getEnemyPos();
-		enemyPos = new Vector2(MathUtils.round(enemyPos.x), MathUtils.round(enemyPos.y));
-		e.setText("Enemy: " + enemyPos);
-		Vector2 playerPos = Player.getPos();
+		Enemy enemy = EntitySystem.getEnemy();
+		if (enemy != null) {
+			Vector2 enemyPos = new Vector2(MathUtils.round(enemy.position.x), MathUtils.round(enemy.position.y));
+			e.setText("Enemy: " + enemyPos + " " + enemy.health);
+		}
+		Vector2 playerPos = Player.position;
 		playerPos = new Vector2(MathUtils.round(playerPos.x), MathUtils.round(playerPos.y));
 		p.setText("Player: " + playerPos);
 		super.act(delta);

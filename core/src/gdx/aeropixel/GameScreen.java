@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class GameScreen implements Screen {
 
     static OrthographicCamera camera;
     private ShapeRenderer renderer = new ShapeRenderer();
+
+    private Enemy enemy;
 
 	GameScreen(final Aeropixel game) {
 		this.game = game;
@@ -42,7 +45,7 @@ public class GameScreen implements Screen {
 
 		EntitySystem.init(game.manager, game.batch);
         EntitySystem.addEntity(new Player());
-		Enemy enemy = new Enemy();
+		enemy = new Enemy();
         enemy.init(200, 200, 0);
         EntitySystem.addEntity(enemy);
 	}
@@ -65,14 +68,19 @@ public class GameScreen implements Screen {
 		stage.act(delta);
 		stage.draw();
 
-        camera.update();
 		renderer.setProjectionMatrix(camera.combined);
 
 		renderer.begin(ShapeRenderer.ShapeType.Line);
 		renderer.setColor(1, 0, 0, 1);
-		float[] vertices = Player.hitbox.getTransformedVertices();
-		renderer.polygon(vertices);
+		ArrayList<Entity> entities = EntitySystem.getEntities();
+		for (Entity e : entities) {
+			for (Polygon p : e.hitbox) {
+				renderer.polygon(p.getTransformedVertices());
+			}
+		}
 		renderer.end();
+
+		camera.update();
 	}
 
     static Vector2 getVelocity(float direction, float speed, boolean scale) {

@@ -3,36 +3,31 @@ package gdx.aeropixel;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
 public abstract class Entity {
 	Sprite sprite;
+	Vector2 position; // always center of sprite
+	int health;
 	ArrayList<Texture> tex;
-	private float dir;
-	private Vector2 speed;
-	private ArrayList<Rectangle> hitbox;
+	float direction;
+	Polygon[] hitbox;
 
-	Entity() {
-		this.tex = new ArrayList<>();
-		this.dir = 0;
-		this.speed = new Vector2();
-		this.hitbox = new ArrayList<>();
-	}
+	Entity() {}
 
 	void update(float deltaTime) {}
 
 	void draw(SpriteBatch batch) { sprite.draw(batch); }
 
+	void handleCollision(Entity otherEntity) {}
+
+	void destroy() {}
+
 	void dispose() {}
 
-	public Vector2 getPosition() {
-		float x = sprite.getX() + sprite.getWidth() / 2;
-		float y = sprite.getY() + sprite.getHeight() / 2;
-		return new Vector2(x, y);
-	}
 
 	@Override
 	public String toString() {
