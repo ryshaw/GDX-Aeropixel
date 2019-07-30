@@ -25,9 +25,7 @@ class EntitySystem {
 		this.batch = b;
 	}
 
-	static ArrayList<Entity> getEntities() {
-		return sys.entities;
-	}
+	static ArrayList<Entity> getEntities() { return sys.entities; }
 
 	static void init(AssetManager m, SpriteBatch b) { sys = new EntitySystem(m, b); }
 

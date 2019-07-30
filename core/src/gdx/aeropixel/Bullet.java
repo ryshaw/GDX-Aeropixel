@@ -20,11 +20,13 @@ class Bullet extends Entity implements Pool.Poolable {
 
     @Override
     void update(float dT) {
-        Vector2 delta = GameScreen.getVelocity(direction, 400, true);
+        int speed = 800;
+        Vector2 delta = GameScreen.getVelocity(direction, speed, true);
         position.add(delta.x, delta.y);
         sprite.setCenter(position.x, position.y);
+
         for (Polygon p : hitbox) {
-            p.setPosition(position.x, position.y);
+            p.setPosition(position.x - delta.x, position.y - delta.y); // tuned for high speeds
         }
         if (Math.abs(sprite.getX()) > GameScreen.MAP_SIZE.y || Math.abs(sprite.getY()) > GameScreen.MAP_SIZE.y) {
             this.destroy();
@@ -37,9 +39,6 @@ class Bullet extends Entity implements Pool.Poolable {
         System.out.println(e + " " + e.health);
         this.destroy();
     }
-
-    @Override
-    void destroy() { EntitySystem.removeEntity(this); }
 
     private void createHitbox() {
         // 2x4 rectangle

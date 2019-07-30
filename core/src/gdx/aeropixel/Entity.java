@@ -24,9 +24,7 @@ public abstract class Entity {
 
 	void handleCollision(Entity otherEntity) {}
 
-	void destroy() {}
-
-	void dispose() {}
+	void destroy() { EntitySystem.removeEntity(this); }
 
 
 	@Override

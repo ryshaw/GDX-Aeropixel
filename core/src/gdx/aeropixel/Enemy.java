@@ -1,18 +1,25 @@
 package gdx.aeropixel;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Pools;
 
+import java.util.ArrayList;
+
 public class Enemy extends Entity implements Pool.Poolable {
 	private float timeBetweenShots;
+	private float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
+	EnemyState state = EnemyState.FORWARD;
 
 	Enemy() { super(); }
 
 	void init(float x, float y, float dir) {
-		sprite = new Sprite(EntitySystem.getTexture("enemy"));
+		createSprites();
+		sprite = new Sprite(tex.get(4)); // neutral pose
 		sprite.setCenter(x, y);
 		position = new Vector2(x, y);
 		sprite.rotate(dir);
@@ -24,20 +31,59 @@ public class Enemy extends Entity implements Pool.Poolable {
 
 	@Override
 	void update(float delta) {
-		position = new Vector2(position.x, position.y + 20 * delta);
-		sprite.setCenter(position.x, position.y);
-
-		for (Polygon p : hitbox) {
-			p.setPosition(position.x, position.y);
-		}
-
 		if (health <= 0) destroy();
 
+		switch (state) {
+			case FORWARD: // go back to moving forward
+				if (MathUtils.isZero(rotTime, 0.02f)) {
+					rotTime = 0;
+				} else {
+					rotTime += -1 * Math.signum(rotTime) * 2 * delta;
+				}
+				break;
+			case LEFT: // turn left
+				rotTime += 2 * delta;
+				break;
+			case RIGHT: // turn right
+				rotTime -= 2 * delta;
+				break;
+		}
+
 		timeBetweenShots += delta;
-		if (timeBetweenShots > 0.5f) {
+		if (timeBetweenShots > 1f) {
 			shoot();
 			timeBetweenShots = 0;
 		}
+
+		move();
+		rotate(delta);
+
+		sprite.setRegion(chooseSprite());
+		state = chooseState(state);
+	}
+
+	private void move() {
+		int speed = 200;
+		Vector2 delta = GameScreen.getVelocity(direction, speed, true);
+		position.add(delta);
+		sprite.setCenter(position.x, position.y);
+		for (Polygon p : hitbox) {
+			p.setPosition(position.x - delta.x, position.y - delta.y); // tuned for high speeds
+		}
+	}
+
+	private void rotate(float delta) {
+		rotTime = MathUtils.clamp(rotTime, -1, 1);
+		float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
+
+		float rotationDelta = rotSpeed * delta;
+		direction += rotationDelta;
+		sprite.setRotation(direction);
+		for (Polygon p : hitbox) {
+			p.setRotation(direction);
+		}
+		float rotScale = Math.abs(rotTime) / 2;
+		hitbox[0].setScale(1 - rotScale, 1); // scales wing hitbox
 	}
 
 	private void shoot() {
@@ -47,9 +93,57 @@ public class Enemy extends Entity implements Pool.Poolable {
 		EntitySystem.addEntity(b);
 	}
 
-	@Override
-	void destroy() { EntitySystem.removeEntity(this); }
+	private EnemyState chooseState(EnemyState oldState) {
+		float r = MathUtils.random(0f, 1f);
+		switch (oldState) {
+			case FORWARD:
+				if (between(r, 0, 0.98f)) {
+					return EnemyState.FORWARD;
+				} else if (between(r, 0.98f, 0.99f)) {
+					return EnemyState.LEFT;
+				} else if (between(r, 0.99f, 1)){
+					return EnemyState.RIGHT;
+				}
+				break;
+			case LEFT:
+				if (between(r, 0, 0.97f)) {
+					return EnemyState.LEFT;
+				} else if (between(r, 0.97f, 1)) {
+					return EnemyState.FORWARD;
+				}
+				break;
+			case RIGHT:
+				if (between(r, 0, 0.97f)) {
+					return EnemyState.RIGHT;
+				} else if (between(r, 0.97f, 1)) {
+					return EnemyState.FORWARD;
+				}
+				break;
+		}
+		return oldState;
+	}
 
+	boolean between(float i, float min, float max) {
+		return (i >= min && i < max); // inclusive start, exclusive end
+	}
+
+	private void createSprites() {
+		tex = new ArrayList<>();
+		// 0-3: left, 4: default, 5-8: right
+		for (int i = 4; i > 0; i--) {
+			tex.add(EntitySystem.getTexture("enemy_left_" + i));
+		}
+		tex.add(EntitySystem.getTexture("enemy"));
+		for (int i = 1; i < 5; i++) {
+			tex.add(EntitySystem.getTexture("enemy_right_" + i));
+		}
+	}
+
+	private Texture chooseSprite() {
+		// use rotation to determine which sprite
+		int index = Math.round(8 - (rotTime + 1) * 4);
+		return tex.get(index);
+	}
 
 	private void createHitbox() {
 		// to get a perfect hitbox, the right x-coordinate must be increased by 1

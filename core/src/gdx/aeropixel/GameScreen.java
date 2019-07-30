@@ -21,8 +21,6 @@ public class GameScreen implements Screen {
     static OrthographicCamera camera;
     private ShapeRenderer renderer = new ShapeRenderer();
 
-    private Enemy enemy;
-
 	GameScreen(final Aeropixel game) {
 		this.game = game;
 
@@ -45,7 +43,7 @@ public class GameScreen implements Screen {
 
 		EntitySystem.init(game.manager, game.batch);
         EntitySystem.addEntity(new Player());
-		enemy = new Enemy();
+		Enemy enemy = new Enemy();
         enemy.init(200, 200, 0);
         EntitySystem.addEntity(enemy);
 	}

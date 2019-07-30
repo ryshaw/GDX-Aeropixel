@@ -1,6 +1,5 @@
 package gdx.aeropixel;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -16,7 +15,7 @@ class Player extends Entity {
 	private static Vector3 cameraCenter = new Vector3(400, 52, 0); // locks camera
 	private static float rotation = 0;
 
-	private static int[] speed = {80, 160}; // sets min and max speed
+	private static int[] speed = {180, 300}; // sets min and max speed
 
 	private static float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
 	private static float speedTime = 0; // 0 = neutral, 1 = speedup
@@ -35,21 +34,21 @@ class Player extends Entity {
 		ArrayList keysDown = GameInput.getKeyInput();
 
 		if (keysDown.contains("D")) {
-			rotTime -= 2 * Gdx.graphics.getDeltaTime();
+			rotTime -= 2 * delta;
 		} else if (keysDown.contains("A")) {
-			rotTime += 2 * Gdx.graphics.getDeltaTime();
+			rotTime += 2 * delta;
 		} else {
 			if (MathUtils.isZero(rotTime, 0.02f)) {
 				rotTime = 0;
 			} else {
-				rotTime += -1 * Math.signum(rotTime) * 2 * Gdx.graphics.getDeltaTime();
+				rotTime += -1 * Math.signum(rotTime) * 2 * delta;
 			}
 		}
 
 		if (keysDown.contains("W")) {
-			speedTime += 0.6*Gdx.graphics.getDeltaTime();
+			speedTime += 0.6*delta;
 		} else {
-			speedTime -= 0.6*Gdx.graphics.getDeltaTime();
+			speedTime -= 0.6*delta;
 		}
 
 		if (keysDown.contains("Space") && timeBetweenShots > 0.2) {
@@ -57,18 +56,18 @@ class Player extends Entity {
 			timeBetweenShots = 0;
 		}
 
-		rotate();
+		rotate(delta);
 		move();
 		sprite.setRegion(chooseSprite());
 
-		timeBetweenShots += Gdx.graphics.getDeltaTime();
+		timeBetweenShots += delta;
 	}
 
-	private void rotate() {
+	private void rotate(float delta) {
 		rotTime = MathUtils.clamp(rotTime, -1, 1);
 		float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
 
-		float rotationDelta = rotSpeed * Gdx.graphics.getDeltaTime();
+		float rotationDelta = rotSpeed * delta;
 		rotation += rotationDelta;
 		GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotationDelta);
 		sprite.setRotation(rotation);
@@ -90,8 +89,9 @@ class Player extends Entity {
 		cameraCenter.add(delta.x, delta.y, 0);
 		position.set(cameraCenter.x + push.x, cameraCenter.y + push.y);
 		sprite.setCenter(position.x, position.y);
+
 		for (Polygon p : hitbox) {
-			p.setPosition(position.x, position.y);
+			p.setPosition(position.x - delta.x, position.y - delta.y); // tuned for high speeds
 		}
 	}
 
