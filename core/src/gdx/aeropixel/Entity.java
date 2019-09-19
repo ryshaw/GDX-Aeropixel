@@ -1,5 +1,6 @@
 package gdx.aeropixel;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -55,6 +56,17 @@ public abstract class Entity {
 			delta.y = 0;
 		}
 		return delta;
+	}
+
+	Vector2 getVelocity(float direction, float speed, boolean scale) {
+		float dirX = (float) Math.sin(Math.toRadians(direction));
+		float dirY = (float) Math.cos(Math.toRadians(direction));
+		Vector2 delta = new Vector2(-speed * dirX, speed * dirY);
+		if (scale) {
+			return delta.scl(Gdx.graphics.getDeltaTime());
+		} else {
+			return delta;
+		}
 	}
 
 

@@ -84,18 +84,15 @@ public class GameScreen implements Screen {
 		renderer.end();
 
 		camera.update();
-	}
 
-    static Vector2 getVelocity(float direction, float speed, boolean scale) {
-        float dirX = (float) Math.sin(Math.toRadians(direction));
-        float dirY = (float) Math.cos(Math.toRadians(direction));
-        Vector2 delta = new Vector2(-speed * dirX, speed * dirY);
-        if (scale) {
-            return delta.scl(Gdx.graphics.getDeltaTime());
-        } else {
-            return delta;
-        }
-    }
+		if (EntitySystem.getEnemies().isEmpty() || EntitySystem.getPlayer().health <= 0) {
+			if (GameInput.getKeyInput().contains("R")) {
+				game.currentScreen = new GameScreen(game);
+				game.setScreen(game.currentScreen);
+				this.dispose();
+			}
+		}
+	}
 
 
     @Override

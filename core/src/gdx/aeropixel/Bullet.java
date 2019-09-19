@@ -21,8 +21,8 @@ class Bullet extends Entity implements Pool.Poolable {
 
     @Override
     void update(float dT) {
-        int speed = 2000;
-        Vector2 delta = GameScreen.getVelocity(direction, speed, true);
+        int speed = 1000;
+        Vector2 delta = getVelocity(direction, speed, true);
         position.add(delta.x, delta.y);
         sprite.setCenter(position.x, position.y);
 

@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class GameInput extends InputAdapter {
 	private static ArrayList<String> keysDown = new ArrayList<>();
-	private ArrayList<String> possibleInputs = new ArrayList<>(Arrays.asList("W", "A", "D", "Space"));
+	private ArrayList<String> possibleInputs = new ArrayList<>(Arrays.asList("W", "A", "D", "Space", "R"));
 
 	@Override
 	public boolean keyDown(int keycode) {

@@ -32,6 +32,12 @@ class Player extends Entity {
 
 	@Override
 	void update(float delta) {
+		if (health <= 0) {
+			speed = new int[]{0, 0};
+			timeBetweenShots = 0;
+			rotTime = -0.5f;
+		}
+
 		ArrayList keysDown = GameInput.getKeyInput();
 
 		if (keysDown.contains("D")) {
@@ -84,8 +90,8 @@ class Player extends Entity {
 		speedTime = MathUtils.clamp(speedTime, 0, 1);
 		float moveSpeed = MathUtils.lerp(speed[0], speed[1], speedTime);
 
-		Vector2 delta = GameScreen.getVelocity(direction, moveSpeed, true);
-		Vector2 push = GameScreen.getVelocity(direction, 10 * speedTime, false);
+		Vector2 delta = getVelocity(direction, moveSpeed, true);
+		Vector2 push = getVelocity(direction, 10 * speedTime, false);
 
 		delta = boundDelta(delta);
 
@@ -100,7 +106,7 @@ class Player extends Entity {
 	}
 
 	private void shoot() {
-		Vector2 front = GameScreen.getVelocity(direction, 40, false);
+		Vector2 front = getVelocity(direction, 40, false);
 		Bullet b = Pools.obtain(Bullet.class);
 		b.init(position.x + front.x, position.y + front.y, direction);
 		EntitySystem.addEntity(b);

@@ -50,7 +50,7 @@ public class Enemy extends Entity implements Pool.Poolable {
 		}
 
 		timeBetweenShots += delta;
-		if (timeBetweenShots > 1f) {
+		if (timeBetweenShots > 0.2f) {
 			shoot();
 			timeBetweenShots = 0;
 		}
@@ -65,7 +65,7 @@ public class Enemy extends Entity implements Pool.Poolable {
 
 	private void move() {
 		int speed = 200;
-		Vector2 delta = GameScreen.getVelocity(direction, speed, true);
+		Vector2 delta = getVelocity(direction, speed, true);
 		delta = boundDelta(delta);
 		position.add(delta);
 		sprite.setCenter(position.x, position.y);
@@ -89,7 +89,7 @@ public class Enemy extends Entity implements Pool.Poolable {
 	}
 
 	private void shoot() {
-		Vector2 front = GameScreen.getVelocity(direction, 40, false);
+		Vector2 front = getVelocity(direction, 40, false);
 		Bullet b = Pools.obtain(Bullet.class);
 		b.init(position.x + front.x, position.y + front.y, direction);
 		EntitySystem.addEntity(b);

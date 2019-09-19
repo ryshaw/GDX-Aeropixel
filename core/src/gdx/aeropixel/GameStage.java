@@ -40,14 +40,20 @@ class GameStage extends Stage {
 			Vector2 enemyPos = new Vector2(MathUtils.round(enemy.position.x), MathUtils.round(enemy.position.y));
 			e.setText("Enemy: " + enemyPos + " " + enemy.state);
 		}
-		Vector2 playerPos = EntitySystem.getPlayer().position;
-		playerPos = new Vector2(MathUtils.round(playerPos.x), MathUtils.round(playerPos.y));
-		p.setText("Player: " + playerPos);
+		Player player = EntitySystem.getPlayer();
+		Vector2 pos = player.position;
+		pos = new Vector2(MathUtils.round(pos.x), MathUtils.round(pos.y));
+		p.setText("Player: " + pos);
 		fps.setText(Gdx.graphics.getFramesPerSecond() + " fps");
 		num.setText("Enemies: " + enemies.size());
 
-		if (enemies.size() == 0) {
+		if (enemies.isEmpty()) {
 			hud.addActor(new TextLabel("You Win!", 200, 400, 3));
+			hud.addActor(new TextLabel("Press R to reset", 300, 300, 1));
+		}
+		if (player.health <= 0) {
+			hud.addActor(new TextLabel("You Lose!", 160, 400, 3));
+			hud.addActor(new TextLabel("Press R to reset", 300, 300, 1));
 		}
 
 		super.act(delta);
