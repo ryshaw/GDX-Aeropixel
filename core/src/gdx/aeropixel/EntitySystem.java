@@ -39,6 +39,7 @@ class EntitySystem {
 		for (Entity entity : entities) {
 			entity.update(deltaTime);
 			checkCollisions(entity);
+			checkOutOfBounds(entity);
 		}
 		entities.addAll(toAdd);
 		toAdd.clear();
@@ -58,12 +59,24 @@ class EntitySystem {
 
 	static Texture getTexture(String path) { return sys.manager.get("images/" + path + ".png"); }
 
-	static Enemy getEnemy() { return sys.getEnemySys(); }
+	static ArrayList<Enemy> getEnemies() { return sys.getEnemiesSys(); }
 
-	private Enemy getEnemySys() {
+	private ArrayList<Enemy> getEnemiesSys() {
+		ArrayList<Enemy> enemyList = new ArrayList<>();
 		for (Entity e : entities) {
 			if (e instanceof Enemy) {
-				return (Enemy) e;
+				enemyList.add((Enemy) e);
+			}
+		}
+		return enemyList;
+	}
+
+	static Player getPlayer() { return sys.getPlayerSys(); }
+
+	private Player getPlayerSys() {
+		for (Entity e : entities) {
+			if (e instanceof Player) {
+				return (Player) e;
 			}
 		}
 		return null;
@@ -83,4 +96,9 @@ class EntitySystem {
 		}
 	}
 
+	private void checkOutOfBounds(Entity e) {
+		if (Math.abs(e.position.x) > GameScreen.MAP_SIZE.y || Math.abs(e.position.y) > GameScreen.MAP_SIZE.y) {
+			e.handleOutOfBounds();
+		}
+	}
 }

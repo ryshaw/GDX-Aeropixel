@@ -11,20 +11,21 @@ import com.badlogic.gdx.utils.Pools;
 import java.util.ArrayList;
 
 class Player extends Entity {
-	static Vector2 position = new Vector2(400, 52); // locks plane
-	private static Vector3 cameraCenter = new Vector3(400, 52, 0); // locks camera
-	private static float rotation = 0;
+	private Vector3 cameraCenter = new Vector3(400, 52, 0); // locks camera
 
-	private static int[] speed = {180, 300}; // sets min and max speed
+	private int[] speed = {200, 400}; // sets min and max speed
 
-	private static float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
-	private static float speedTime = 0; // 0 = neutral, 1 = speedup
-	private static float timeBetweenShots = 0;
+	private float rotTime = 0; // 0 = neutral, 1 = left, -1 = right
+	private float speedTime = 0; // 0 = neutral, 1 = speedup
+	private float timeBetweenShots = 0;
 
 	Player() {
+		super();
+		position = new Vector2(400, 52); // locks plane
 		createSprites();
 		sprite = new Sprite(tex.get(4));
 		sprite.setCenter(position.x, position.y);
+		direction = 0;
 		createHitbox();
 		health = 2;
 	}
@@ -61,6 +62,7 @@ class Player extends Entity {
 		sprite.setRegion(chooseSprite());
 
 		timeBetweenShots += delta;
+		bounds[0] = 0; bounds[1] = 0;
 	}
 
 	private void rotate(float delta) {
@@ -68,11 +70,11 @@ class Player extends Entity {
 		float rotSpeed = MathUtils.lerp(0, 100, rotTime); // 100 degrees per second
 
 		float rotationDelta = rotSpeed * delta;
-		rotation += rotationDelta;
+		direction += rotationDelta;
 		GameScreen.camera.rotateAround(cameraCenter, new Vector3(0, 0, 1), rotationDelta);
-		sprite.setRotation(rotation);
+		sprite.setRotation(direction);
 		for (Polygon p : hitbox) {
-			p.setRotation(rotation);
+			p.setRotation(direction);
 		}
 		float rotScale = Math.abs(rotTime) / 2;
 		hitbox[0].setScale(1 - rotScale, 1); // scales wing hitbox
@@ -82,8 +84,10 @@ class Player extends Entity {
 		speedTime = MathUtils.clamp(speedTime, 0, 1);
 		float moveSpeed = MathUtils.lerp(speed[0], speed[1], speedTime);
 
-		Vector2 delta = GameScreen.getVelocity(rotation, moveSpeed, true);
-		Vector2 push = GameScreen.getVelocity(rotation, 10 * speedTime, false);
+		Vector2 delta = GameScreen.getVelocity(direction, moveSpeed, true);
+		Vector2 push = GameScreen.getVelocity(direction, 10 * speedTime, false);
+
+		delta = boundDelta(delta);
 
 		GameScreen.camera.translate(delta.x, delta.y);
 		cameraCenter.add(delta.x, delta.y, 0);
@@ -96,9 +100,9 @@ class Player extends Entity {
 	}
 
 	private void shoot() {
-		Vector2 front = GameScreen.getVelocity(rotation, 40, false);
+		Vector2 front = GameScreen.getVelocity(direction, 40, false);
 		Bullet b = Pools.obtain(Bullet.class);
-		b.init(position.x + front.x, position.y + front.y, rotation);
+		b.init(position.x + front.x, position.y + front.y, direction);
 		EntitySystem.addEntity(b);
 	}
 

@@ -1,11 +1,11 @@
 currently working on:
-- enemies
+- damage and round reset
 
 to-do immediately:
 - collision
 
 further on:
-- damage and game over
+- enemy AI
 - post-round menu system
 - upgrades
 - different weapons
@@ -18,3 +18,5 @@ currently have:
 - bullets
 - randomly-placed clouds
 - EntitySystem
+- basic enemies
+- collision with boundaries

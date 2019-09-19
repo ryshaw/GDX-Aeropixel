@@ -60,11 +60,13 @@ public class Enemy extends Entity implements Pool.Poolable {
 
 		sprite.setRegion(chooseSprite());
 		state = chooseState(state);
+		bounds[0] = 0; bounds[1] = 0;
 	}
 
 	private void move() {
 		int speed = 200;
 		Vector2 delta = GameScreen.getVelocity(direction, speed, true);
+		delta = boundDelta(delta);
 		position.add(delta);
 		sprite.setCenter(position.x, position.y);
 		for (Polygon p : hitbox) {
@@ -123,7 +125,7 @@ public class Enemy extends Entity implements Pool.Poolable {
 		return oldState;
 	}
 
-	boolean between(float i, float min, float max) {
+	private boolean between(float i, float min, float max) {
 		return (i >= min && i < max); // inclusive start, exclusive end
 	}
 

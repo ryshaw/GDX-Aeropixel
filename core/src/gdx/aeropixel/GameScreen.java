@@ -76,6 +76,11 @@ public class GameScreen implements Screen {
 				renderer.polygon(p.getTransformedVertices());
 			}
 		}
+		renderer.line(-8000, -8000, 8000, -8000);
+		renderer.line(8000, -8000, 8000, 8000);
+		renderer.line(8000, 8000, -8000, 8000);
+		renderer.line(-8000, 8000, -8000, -8000);
+
 		renderer.end();
 
 		camera.update();

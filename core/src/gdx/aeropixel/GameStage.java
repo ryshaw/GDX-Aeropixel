@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.ArrayList;
+
 class GameStage extends Stage {
 	private GameScreen screen;
 	private Group hud;
@@ -22,7 +24,7 @@ class GameStage extends Stage {
 		e = new TextLabel("Enemy: ", 2, 570,  1);
 		p = new TextLabel("Player: ", 2, 600,  1);
 		fps = new TextLabel("fps", 2, 630, 1);
-		num = new TextLabel("Entities:", 120, 630, 1);
+		num = new TextLabel("Enemies: ", 120, 630, 1);
 
 		hud.addActor(e);
 		hud.addActor(p);
@@ -32,16 +34,22 @@ class GameStage extends Stage {
 
 	@Override
 	public void act(float delta) {
-		Enemy enemy = EntitySystem.getEnemy();
-		if (enemy != null) {
+		ArrayList<Enemy> enemies = EntitySystem.getEnemies();
+		if (!enemies.isEmpty()) {
+			Enemy enemy = EntitySystem.getEnemies().get(0);
 			Vector2 enemyPos = new Vector2(MathUtils.round(enemy.position.x), MathUtils.round(enemy.position.y));
 			e.setText("Enemy: " + enemyPos + " " + enemy.state);
 		}
-		Vector2 playerPos = Player.position;
+		Vector2 playerPos = EntitySystem.getPlayer().position;
 		playerPos = new Vector2(MathUtils.round(playerPos.x), MathUtils.round(playerPos.y));
 		p.setText("Player: " + playerPos);
 		fps.setText(Gdx.graphics.getFramesPerSecond() + " fps");
-		num.setText("Entities: " + EntitySystem.getEntities().size());
+		num.setText("Enemies: " + enemies.size());
+
+		if (enemies.size() == 0) {
+			hud.addActor(new TextLabel("You Win!", 200, 400, 3));
+		}
+
 		super.act(delta);
 	}
 
