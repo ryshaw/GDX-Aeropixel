@@ -43,7 +43,7 @@ class Button extends Actor {
 		};
 		addListener(onClick);
 
-		plane = new Sprite(new Texture("images/plane.png"));
+		plane = new Sprite(new Texture("images/player/plane.png"));
 		plane.rotate(270);
 		plane.setCenter(x - 40, y + h/2);
 		mouseover = false;

@@ -43,9 +43,12 @@ public class GameScreen implements Screen {
 
 		EntitySystem.init(game.manager, game.batch);
         EntitySystem.addEntity(new Player());
-		Enemy enemy = new Enemy();
-        enemy.init(200, 200, 0);
-        EntitySystem.addEntity(enemy);
+		Enemy enemy1 = new Enemy();
+        enemy1.init(200, 400, 0);
+        EntitySystem.addEntity(enemy1);
+		Enemy enemy2 = new Enemy();
+		enemy2.init(600, 400, 0);
+		EntitySystem.addEntity(enemy2);
 	}
 
 
@@ -87,7 +90,7 @@ public class GameScreen implements Screen {
 
 		if (EntitySystem.getEnemies().isEmpty() || EntitySystem.getPlayer().health <= 0) {
 			if (GameInput.getKeyInput().contains("R")) {
-				game.currentScreen = new GameScreen(game);
+				game.currentScreen = new MenuScreen(game);
 				game.setScreen(game.currentScreen);
 				this.dispose();
 			}

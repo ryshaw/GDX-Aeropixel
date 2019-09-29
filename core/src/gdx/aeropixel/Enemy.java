@@ -133,11 +133,11 @@ public class Enemy extends Entity implements Pool.Poolable {
 		tex = new ArrayList<>();
 		// 0-3: left, 4: default, 5-8: right
 		for (int i = 4; i > 0; i--) {
-			tex.add(EntitySystem.getTexture("enemy_left_" + i));
+			tex.add(EntitySystem.getTexture("enemy/enemy_left_" + i));
 		}
-		tex.add(EntitySystem.getTexture("enemy"));
+		tex.add(EntitySystem.getTexture("enemy/enemy"));
 		for (int i = 1; i < 5; i++) {
-			tex.add(EntitySystem.getTexture("enemy_right_" + i));
+			tex.add(EntitySystem.getTexture("enemy/enemy_right_" + i));
 		}
 	}
 

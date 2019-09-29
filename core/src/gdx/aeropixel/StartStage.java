@@ -47,9 +47,7 @@ class StartStage extends Stage {
 	}
 
 	@Override
-	public void act(float delta) {
-		super.act(delta);
-	}
+	public void act(float delta) { super.act(delta); }
 
 	void clicked(String command) {
 		switch (command) {

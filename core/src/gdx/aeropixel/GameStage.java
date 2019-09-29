@@ -48,12 +48,12 @@ class GameStage extends Stage {
 		num.setText("Enemies: " + enemies.size());
 
 		if (enemies.isEmpty()) {
-			hud.addActor(new TextLabel("You Win!", 200, 400, 3));
-			hud.addActor(new TextLabel("Press R to reset", 300, 300, 1));
+			hud.addActor(new TextLabel("You Win!", 180, 400, 3));
+			hud.addActor(new TextLabel("Press R to continue", 280, 300, 1));
 		}
 		if (player.health <= 0) {
 			hud.addActor(new TextLabel("You Lose!", 160, 400, 3));
-			hud.addActor(new TextLabel("Press R to reset", 300, 300, 1));
+			hud.addActor(new TextLabel("Press R to continue", 280, 300, 1));
 		}
 
 		super.act(delta);

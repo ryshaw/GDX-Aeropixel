@@ -19,6 +19,10 @@ class Player extends Entity {
 	private float speedTime = 0; // 0 = neutral, 1 = speedup
 	private float timeBetweenShots = 0;
 
+	int speedlvl = 1;
+	int armorlvl = 1;
+	int agilelvl = 1;
+
 	Player() {
 		super();
 		position = new Vector2(400, 52); // locks plane
@@ -116,11 +120,11 @@ class Player extends Entity {
 		tex = new ArrayList<>();
 		// 0-3: left, 4: default, 5-8: right
 		for (int i = 4; i > 0; i--) {
-			tex.add(EntitySystem.getTexture("left_" + i));
+			tex.add(EntitySystem.getTexture("player/left_" + i));
 		}
-		tex.add(EntitySystem.getTexture("plane"));
+		tex.add(EntitySystem.getTexture("player/plane"));
 		for (int i = 1; i < 5; i++) {
-			tex.add(EntitySystem.getTexture("right_" + i));
+			tex.add(EntitySystem.getTexture("player/right_" + i));
 		}
 	}
 

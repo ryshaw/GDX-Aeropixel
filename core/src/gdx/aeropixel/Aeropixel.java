@@ -29,7 +29,14 @@ public class Aeropixel extends Game {
 		manager = new AssetManager();
 		FileHandle[] files = Gdx.files.internal("images").list();
 		for (FileHandle f : files) {
-			manager.load("images/" + f.name(), Texture.class);
+			if (f.isDirectory()) {
+				FileHandle[] directory = f.list();
+				for (FileHandle h : directory) {
+					manager.load("images/" + f.name() + "/" + h.name(), Texture.class);
+				}
+			} else {
+				manager.load("images/" + f.name(), Texture.class);
+			}
 		}
 		manager.finishLoading();
 
@@ -54,7 +61,7 @@ public class Aeropixel extends Game {
 		generatorBold.dispose();
 
 		for (int i = 1; i < 6; i++) {
-			String file = "images/cloud" + i + ".png";
+			String file = "images/clouds/cloud" + i + ".png";
 			clouds.add(manager.get(file, Texture.class));
 		}
 

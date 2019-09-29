@@ -10,7 +10,7 @@ class Bullet extends Entity implements Pool.Poolable {
     Bullet() {  super(); }
 
     void init(float x, float y, float dir) {
-        sprite = new Sprite(EntitySystem.getTexture("bullet"));
+        sprite = new Sprite(EntitySystem.getTexture("projectiles/bullet"));
         sprite.setCenter(x, y);
         position = new Vector2(x, y);
         sprite.rotate(dir);
@@ -33,7 +33,7 @@ class Bullet extends Entity implements Pool.Poolable {
 
     @Override
     void handleCollision(Entity e) {
-        e.health -= 1;
+        if (e.health > 0) e.health -= 1;
         System.out.println(e + " " + e.health);
         this.destroy();
     }
