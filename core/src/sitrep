@@ -19,3 +19,7 @@ currently have:
 - EntitySystem
 - basic enemies
 - collision with boundaries
+
+bugs:
+- very rare, bullets shoot incredibly fast
+- enemy health is wonky
