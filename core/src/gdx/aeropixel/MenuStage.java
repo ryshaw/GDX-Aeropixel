@@ -27,18 +27,29 @@ class MenuStage extends Stage {
 		TextLabel agl = new TextLabel("Agility", 650, 550, 1);
 		menu.addActor(agl);
 
+		Player p = EntitySystem.getPlayer();
+
 		TextLabel mg = new TextLabel("Machine Gun", 30, 515, 1);
 		menu.addActor(mg);
-		ImageLabel spdlvl = new ImageLabel("level/level1", 285, 515);
+		ImageLabel spdlvl = new ImageLabel("level/level" + p.speedlvl, 285, 515);
 		menu.addActor(spdlvl);
-		ImageLabel amrlvl = new ImageLabel("level/level1", 485, 515);
+		ImageLabel amrlvl = new ImageLabel("level/level" + p.armorlvl, 485, 515);
 		menu.addActor(amrlvl);
-		ImageLabel agllvl = new ImageLabel("level/level1", 690, 515);
+		ImageLabel agllvl = new ImageLabel("level/level" + p.agilelvl, 690, 515);
 		menu.addActor(agllvl);
+
+		MenuButton launch = new MenuButton("Launch", 680, 40, 80, 30, 1);
+		menu.addActor(launch);
 	}
 
 	@Override
 	public void act(float delta) { super.act(delta); }
+
+	void clicked(String command) {
+		if ("Launch".equals(command)) {
+			screen.startGame();
+		}
+	}
 
 	@Override
 	public void dispose() {

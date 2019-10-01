@@ -19,12 +19,13 @@ class Player extends Entity {
 	private float speedTime = 0; // 0 = neutral, 1 = speedup
 	private float timeBetweenShots = 0;
 
-	int speedlvl = 1;
-	int armorlvl = 1;
-	int agilelvl = 1;
+	int speedlvl, armorlvl, agilelvl;
 
-	Player() {
+	Player(int[] lvls) {
 		super();
+		speedlvl = lvls[0];
+		armorlvl = lvls[1];
+		agilelvl = lvls[2];
 		position = new Vector2(400, 52); // locks plane
 		createSprites();
 		sprite = new Sprite(tex.get(4));

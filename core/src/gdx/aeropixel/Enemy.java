@@ -49,7 +49,7 @@ public class Enemy extends Entity implements Pool.Poolable {
 				break;
 		}
 
-		timeBetweenShots += delta;
+		//timeBetweenShots += delta;
 		if (timeBetweenShots > 0.2f) {
 			shoot();
 			timeBetweenShots = 0;

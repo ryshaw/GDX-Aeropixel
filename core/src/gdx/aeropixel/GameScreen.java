@@ -3,6 +3,7 @@ package gdx.aeropixel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -42,13 +43,23 @@ public class GameScreen implements Screen {
 		}
 
 		EntitySystem.init(game.manager, game.batch);
-        EntitySystem.addEntity(new Player());
+        EntitySystem.addEntity(new Player(readLevelFile()));
 		Enemy enemy1 = new Enemy();
         enemy1.init(200, 400, 0);
         EntitySystem.addEntity(enemy1);
 		Enemy enemy2 = new Enemy();
 		enemy2.init(600, 400, 0);
 		EntitySystem.addEntity(enemy2);
+	}
+
+	private int[] readLevelFile() {
+		FileHandle f = Gdx.files.internal("data.txt");
+		int[] levels = new int[3];
+		String s = f.readString();
+		levels[0] = Integer.parseInt(s.substring(0, 1));
+		levels[1] = Integer.parseInt(s.substring(1, 2));
+		levels[2] = Integer.parseInt(s.substring(2, 3));
+		return levels;
 	}
 
 
@@ -90,6 +101,7 @@ public class GameScreen implements Screen {
 
 		if (EntitySystem.getEnemies().isEmpty() || EntitySystem.getPlayer().health <= 0) {
 			if (GameInput.getKeyInput().contains("R")) {
+				GameInput.getKeyInput().clear();
 				game.currentScreen = new MenuScreen(game);
 				game.setScreen(game.currentScreen);
 				this.dispose();

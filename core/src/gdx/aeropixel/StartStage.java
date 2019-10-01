@@ -18,10 +18,10 @@ class StartStage extends Stage {
 		this.instrGroup = new Group();
 		this.addActor(mainGroup);
 
-		Button play = new Button("Play", 100, 280, 120, 60, 2);
-		Button instr = new Button("How to Play", 100, 200, 300, 60, 2);
-		Button quit = new Button("Quit", 100, 120, 120, 60, 2);
-		Button back = new Button("Back", 330, 80, 120, 60, 2);
+		StartButton play = new StartButton("Play", 100, 280, 120, 60, 2);
+		StartButton instr = new StartButton("How to Play", 100, 200, 300, 60, 2);
+		StartButton quit = new StartButton("Quit", 100, 120, 120, 60, 2);
+		StartButton back = new StartButton("Back", 330, 80, 120, 60, 2);
 		mainGroup.addActor(play);
 		mainGroup.addActor(instr);
 		mainGroup.addActor(quit);
@@ -79,14 +79,14 @@ class StartStage extends Stage {
 	@Override
 	public void dispose() {
 		for (Actor a : mainGroup.getChildren()) {
-			if (a.getClass() == Button.class) {
-				Button b = (Button) a;
+			if (a.getClass() == StartButton.class) {
+				StartButton b = (StartButton) a;
 				b.dispose();
 			}
 		}
 		for (Actor a : instrGroup.getChildren()) {
-			if (a.getClass() == Button.class) {
-				Button b = (Button) a;
+			if (a.getClass() == StartButton.class) {
+				StartButton b = (StartButton) a;
 				b.dispose();
 			}
 		}

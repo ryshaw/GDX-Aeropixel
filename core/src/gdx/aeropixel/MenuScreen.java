@@ -22,7 +22,7 @@ public class MenuScreen implements Screen {
         stage = new MenuStage(this);
         Gdx.input.setInputProcessor(stage);
         plane = new Sprite(new Texture("images/plane_large.png"));
-        plane.setCenter(400, 60);
+        plane.setCenter(340, 60);
 	 }
 
 
@@ -41,6 +41,12 @@ public class MenuScreen implements Screen {
 
         camera.update();
     }
+
+	void startGame() {
+		game.currentScreen = new GameScreen(game);
+		game.setScreen(game.currentScreen);
+		this.dispose();
+	}
 
 	@Override
 	public void dispose() { stage.dispose(); }
